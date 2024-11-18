@@ -5,12 +5,12 @@ let sections = document.getElementById("section-container");
 document.getElementById("add-section").addEventListener("click", createSection);
 
 function createSection() {
-  const fragment = sectionTemplate.cloneNode(true);
-  const section = parseSection(fragment.children[0]);
+  const fragment = sectionTemplate.cloneNode(true).children[0];
+  const section = parseSection(fragment);
 
   section.meta.title.addEventListener("input", rerender);
   section.meta.deleteSection.addEventListener("click", () => {
-    section.remove();
+    fragment.remove();
     rerender();
   });
   section.addPoint.addEventListener("click", () => createPoint(section));
