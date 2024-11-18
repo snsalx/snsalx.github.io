@@ -5,15 +5,17 @@ let sections = document.getElementById("section-container");
 document.getElementById("add-section").addEventListener("click", createSection);
 
 function createSection() {
-  const [section] = sectionTemplate.cloneNode(true).children;
-  const [{ elements: form }, spacer] = section.children;
+  const fragment = sectionTemplate.cloneNode(true);
+  const section = parseSection(fragment.children[0]);
 
-  form.deleteSection.addEventListener("click", () => section.remove());
-  form.appendPoint.addEventListener("click", () => createPoint(section));
-  form.title.addEventListener("input", rerender);
+  section.meta.title.addEventListener("input", rerender);
+  section.meta.deleteSection.addEventListener("click", () => {
+    section.remove();
+    rerender();
+  });
+  section.addPoint.addEventListener("click", () => createPoint(section));
 
-  sections.appendChild(section);
-
+  sections.appendChild(fragment);
   rerender();
 }
 
@@ -22,15 +24,15 @@ function createPoint(section) {
 
   point.elements.delete.addEventListener("click", () => point.remove());
 
-  getInputs(section).points.appendChild(point);
-
+  section.points.appendChild(point);
   rerender();
 }
 
 function rerender() {
-  const sectionTitles = Array.from(sections.children)
-    .map(getInputs)
-    .map((form) => form.title.value)
+  const sections = listSections();
+
+  const sectionTitles = sections
+    .map((section) => section.meta.elements.title.value)
     .filter(Boolean);
 
   const options = sectionTitles.map((title) => {
@@ -41,17 +43,27 @@ function rerender() {
     return option;
   });
 
-  document.querySelectorAll("select[name='sectionLink']").forEach((select) => {
-    const value = select.value;
-    const empty = select.children[0];
-    const opts = options.map((option) => option.cloneNode(true));
+  sections
+    .flatMap((section) => Array.from(section.points.children))
+    .map((form) => form.elements.sectionLink)
+    .forEach((select) => {
+      const value = select.value;
+      const empty = select.children[0];
+      const opts = options.map((option) => option.cloneNode(true));
 
-    select.replaceChildren(...[empty, ...opts]);
-    select.value = value;
-  });
+      select.replaceChildren(...[empty, ...opts]);
+      select.value = value;
+    });
 }
 
-function getInputs(section) {
-  const form = section.children[0];
-  return form.elements;
+function listSections() {
+  return Array.from(sections.children).map(parseSection);
+}
+
+function parseSection(domSection) {
+  return {
+    meta: domSection.children[0],
+    points: domSection.children[2],
+    addPoint: domSection.children[3],
+  };
 }

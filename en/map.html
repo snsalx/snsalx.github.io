@@ -64,10 +64,9 @@
         <p>You can upload a map that you generated before to edit it</p>
         <input id="upload-zip" type="file" />
       </div>
+
       <h3>Sections</h3>
-
       <div id="section-container"></div>
-
       <div class="grid">
         <button id="add-section" class="outline contrast">Add a section</button>
         <button id="download-zip" class="outline secondary">
@@ -87,58 +86,61 @@
     <template id="section-template">
       <section>
         <form>
-          <fieldset>
-            <label>
-              Title
-              <div role="group">
-                <input type="text" name="title" />
-                <input
-                  type="button"
-                  class="contrast"
-                  value="Delete section"
-                  name="deleteSection"
-                />
-              </div>
-            </label>
-            <label>
-              Description
-              <textarea name="description"></textarea>
-            </label>
-            <label>
-              Source
-              <input type="url" name="soruce" />
-            </label>
-            <label>
-              Image
-              <input type="file" />
-            </label>
-            <figure>
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/2/29/Himalayas%2C_Ama_Dablam%2C_Nepal.jpg"
-                alt="Minimal landscape"
+          <label>
+            Title
+            <div role="group">
+              <input type="text" name="title" />
+              <input
+                type="button"
+                class="contrast"
+                value="Delete section"
+                name="deleteSection"
               />
-              <figcaption>
-                <span>Image from</span>
-                <a
-                  href="https://commons.wikimedia.org/wiki/File:Himalayas,_Ama_Dablam,_Nepal.jpg"
-                  target="_blank"
-                  >Wikimedia Commons</a
-                >
-                <span>taken for the mockup version of this site</span>
-              </figcaption>
-            </figure>
-          </fieldset>
+            </div>
+          </label>
 
-          <h4>Points</h4>
-          <fieldset name="points"></fieldset>
-          <input type="button" name="appendPoint" value="Add a point" />
+          <label>
+            Description
+            <textarea name="description"></textarea>
+          </label>
+
+          <label>
+            Source
+            <input type="url" name="soruce" />
+          </label>
+
+          <label>
+            Image
+            <input type="file" />
+          </label>
+
+          <figure>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/2/29/Himalayas%2C_Ama_Dablam%2C_Nepal.jpg"
+              alt="Minimal landscape"
+            />
+            <figcaption>
+              <span>Image from</span>
+              <a
+                href="https://commons.wikimedia.org/wiki/File:Himalayas,_Ama_Dablam,_Nepal.jpg"
+                target="_blank"
+                >Wikimedia Commons</a
+              >
+              <span>taken for the mockup version of this site</span>
+            </figcaption>
+          </figure>
         </form>
+
+        <h4>Points</h4>
+        <div name="point-container"></div>
+        <input type="button" name="appendPoint" value="Add a point" />
+
         <hr />
       </section>
     </template>
 
     <template id="point-template">
-      <fieldset class="grid">
+      <form class="grid">
         <div role="group">
           <select name="sectionLink" aria-label="Point link">
             <option selected disabled value="">Links to...</option>
@@ -153,7 +155,7 @@
           <input type="button" name="move" class="secondary" value="Move" />
           <input type="button" name="delete" class="contrast" value="Delete" />
         </div>
-      </fieldset>
+      </form>
     </template>
 
     <script src="/scripts/map.editor.js"></script>
