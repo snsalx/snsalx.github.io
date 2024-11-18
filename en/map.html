@@ -13,27 +13,32 @@
   </head>
   <body>
     <header class="container">
-      <div class="profile">
-        <img src="https://avatars.githubusercontent.com/u/109967128" alt="avatar" />
-        <h1>
-          <span>Sensei Alex</span>
-        </h1>
-        <small>
-          <span>a.k.a.</span>
-          <b>snsalx</b>
-        </small>
-      </div>
       <nav>
-        <a href="/en">home</a>
-        <a href="/en/map.html" aria-current="page">map</a>
-        <a href="/en/basics.html">basics</a>
-        <a href="/">ru</a>
+        <ul>
+          <li>
+            <a class="profile secondary" href="/en">
+              <img src="https://avatars.githubusercontent.com/u/109967128" alt="avatar" />
+              <h1>
+                <span>SnsAlx</span>
+              </h1>
+              <small>
+                <span>a.k.a.</span>
+                <b>Sensei Alex</b>
+              </small>
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <li><a href="/en/map.html" aria-current="page">map</a></li>
+          <li><a href="/en/basics.html">basics</a></li>
+          <li><a href="/">ru</a></li>
+        </ul>
       </nav>
     </header>
 
     <main class="container">
       <section>
-        <h1>Map</h1>
+        <h2>Map</h2>
         <p>
           A generator for interactive maps. One such map will be deployed at kubstu.
         </p>
@@ -50,12 +55,12 @@
       </section>
       <hr />
 
-      <h1>Editor</h1>
+      <h2>Editor</h2>
       <div class="grid">
         <p>You can upload a map that you generated before to edit it</p>
         <input type="file" />
       </div>
-      <h2>Sections</h2>
+      <h3>Sections</h3>
       <section>
         <form>
           <fieldset>
@@ -92,7 +97,7 @@
           </fieldset>
 
           <fieldset>
-            <h3>Points</h3>
+            <h4>Points</h4>
 
             <fieldset class="grid">
               <div role="group">
