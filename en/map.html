@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.lime.min.css"
+    >
+    <link href="/main.css" rel="stylesheet" />
+    <title>Map by Sensei Alex</title>
+  </head>
+  <body>
+    <header class="container">
+      <div class="profile">
+        <img src="https://avatars.githubusercontent.com/u/109967128" alt="avatar" />
+        <h1>
+          <span>Sensei Alex</span>
+        </h1>
+        <small>
+          <span>a.k.a.</span>
+          <b>snsalx</b>
+        </small>
+      </div>
+      <nav>
+        <a href="/en">home</a>
+        <a href="/en/map.html" aria-current="page">map</a>
+        <a href="/en/basics.html">basics</a>
+        <a href="/">ru</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section>
+        <h1>Map</h1>
+        <p>
+          A generator for interactive maps. One such map will be deployed at kubstu.
+        </p>
+        <p>
+          The data is organized in <b>sections</b>,
+          each section has an image, a title, and a description.
+          You can place points on the image, points are links to other sections.
+        </p>
+        <p>
+          The output of the editor is a zip archive containing a site
+          that displays the map. The archive can be hosted by any static server
+          or uploaded back for further editing.
+        </p>
+      </section>
+      <hr />
+
+      <h1>Editor</h1>
+      <div class="grid">
+        <p>You can upload a map that you generated before to edit it</p>
+        <input type="file" />
+      </div>
+      <h2>Sections</h2>
+      <section>
+        <form>
+          <fieldset>
+            <label>
+              Title
+              <div role="group">
+                <input type="text" name="title" />
+                <input type="button" class="contrast" value="Delete section" />
+              </div>
+            </label>
+            <label>
+              Description
+              <textarea name="description"></textarea>
+            </label>
+            <label>
+              Source
+              <input type="url" name="soruce" />
+            </label>
+            <label>
+              Image
+              <input type="file" />
+            </label>
+            <figure>
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/2/29/Himalayas%2C_Ama_Dablam%2C_Nepal.jpg"
+                alt="Minimal landscape"
+              />
+              <figcaption>
+                <span>Image from</span>
+                <a href="https://commons.wikimedia.org/wiki/File:Himalayas,_Ama_Dablam,_Nepal.jpg" target="_blank">Wikimedia Commons</a>
+                <span>taken for the mockup version of this site</span>
+              </figcaption>
+            </figure>
+          </fieldset>
+
+          <fieldset>
+            <h3>Points</h3>
+
+            <fieldset class="grid">
+              <div role="group">
+              <select name="link" aria-label="Point link">
+                <option selected disabled value="">Links to...</option>
+              </select>
+              <select name="type" aria-label="Point type">
+                <option selected disabled value="">Type...</option>
+                <option>Square</option>
+                <option>Round</option>
+                <option>Invisible</option>
+              </select>
+              <input type="number" name="size" placeholder="Size (px)" />
+              <input type="button" name="delete" class="secondary" value="Move" />
+              <input type="button" name="delete" class="contrast" value="Delete" />
+              </div>
+            </fieldset>
+            <input type="button" name="add" value="Add a point" />
+          </fieldset>
+        </form>
+      </section>
+      <hr />
+
+      <div class="grid">
+        <button class="outline contrast">
+          Add a section
+        </button>
+        <button class="outline secondary">
+          Download site
+        </button>
+      </div>
+    </main>
+
+    <footer class="container">
+      <small>
+        <a href="https://github.com/snsalx">
+          <span>アレックス先生</span>
+        </a>
+      </small>
+    </footer>
+  </body>
+</html>
