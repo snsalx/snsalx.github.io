@@ -3,6 +3,7 @@ let pointTemplate = document.getElementById("point-template").content;
 let sections = document.getElementById("section-container");
 
 document.getElementById("add-section").addEventListener("click", createSection);
+document.getElementById("download-zip").addEventListener("click", buildZip);
 
 function createSection() {
   const fragment = sectionTemplate.cloneNode(true).children[0];
@@ -26,6 +27,25 @@ function createPoint(section) {
 
   section.points.appendChild(point);
   rerender();
+}
+
+function buildZip() {
+  const json = listSections()
+    .map((section) => ({
+      meta: Object.fromEntries(new FormData(section.meta)),
+      points: Array.from(section.points.children).map((point) =>
+        Object.fromEntries(new FormData(point)),
+      ),
+    }))
+    .map((section) => ({
+      meta: { ...section.meta, image: section.meta.image.name },
+      points: section.points,
+    }));
+
+  const zip = new JSZip();
+  zip.file("data.json", JSON.stringify(json));
+
+  zip.generateAsync({ type: "blob" }).then((blob) => saveAs(blob, "map.zip"));
 }
 
 function rerender() {

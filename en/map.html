@@ -62,7 +62,11 @@
       <h2>Editor</h2>
       <div class="grid">
         <p>You can upload a map that you generated before to edit it</p>
-        <input id="upload-zip" type="file" />
+        <input
+          id="upload-zip"
+          type="file"
+          accept="application/zip, application/x-zip-compressed"
+        />
       </div>
 
       <h3>Sections</h3>
@@ -111,7 +115,11 @@
 
           <label>
             Image
-            <input type="file" />
+            <input
+              type="file"
+              name="image"
+              accept="image/png, image/jpeg, image/svg+xml"
+            />
           </label>
 
           <figure>
@@ -158,6 +166,8 @@
       </form>
     </template>
 
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="/scripts/map.editor.js"></script>
   </body>
 </html>
