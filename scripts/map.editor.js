@@ -14,10 +14,16 @@ function createSection() {
     fragment.remove();
     rerender();
   });
+  section.meta.image.addEventListener("change", () => updateImage(section));
   section.addPoint.addEventListener("click", () => createPoint(section));
 
   sections.appendChild(fragment);
   rerender();
+}
+
+function updateImage(section) {
+  const file = section.meta.image.files[0]; // it only allows selecting one file
+  section.image.src = URL.createObjectURL(file);
 }
 
 function createPoint(section) {
@@ -112,6 +118,7 @@ function parseSection(domSection) {
   return {
     meta: domSection.children[0],
     image: domSection.querySelector("img"),
+    imageCaption: domSection.querySelector("figcaption"),
     points: domSection.children[2],
     addPoint: domSection.children[3],
   };
