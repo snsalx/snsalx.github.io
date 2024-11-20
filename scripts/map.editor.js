@@ -28,8 +28,9 @@ function createSection() {
 }
 
 function updateImage(section) {
-  const file = section.meta.image.files[0]; // it only allows selecting one file
-  section.image.src = URL.createObjectURL(file);
+  for (const file of section.meta.image.files) {
+    section.image.src = URL.createObjectURL(file);
+  }
 }
 
 function createPoint(section) {
