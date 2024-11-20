@@ -21,6 +21,7 @@ function createSection() {
   });
   section.meta.image.addEventListener("change", () => updateImage(section));
   section.addPoint.addEventListener("click", () => createPoint(section));
+  section.meta.addEventListener("submit", () => event.preventDefault());
 
   sections.appendChild(fragment);
   rerender();
@@ -40,6 +41,7 @@ function createPoint(section) {
     movePoint(section, point),
   );
   point.addEventListener("change", () => updatePointPreview(point.id));
+  point.addEventListener("submit", () => event.preventDefault());
 
   if (!movePoint(section, point)) {
     return;
