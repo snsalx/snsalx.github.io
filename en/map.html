@@ -9,6 +9,22 @@
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.lime.min.css"
     />
     <link href="/main.css" rel="stylesheet" />
+    <style>
+      .point-invisible,
+      .point-square,
+      .point-round {
+        position: absolute;
+        background: var(--pico-color);
+        border-radius: var(--pico-border-radius);
+      }
+      .point-round {
+        border-radius: 100%;
+      }
+      .point-invisible {
+        background: #00000033;
+        border: 1px solid var(--pico-color);
+      }
+    </style>
     <title>Map by Sensei Alex</title>
   </head>
   <body>
@@ -122,8 +138,9 @@
             />
           </label>
 
-          <figure>
+          <figure style="position: relative">
             <img />
+            <figcaption></figcaption>
           </figure>
         </form>
 
@@ -141,9 +158,9 @@
           <option selected disabled value="">Links to...</option>
         </select>
         <select name="type" aria-label="Point type">
-          <option value="round">Round</option>
-          <option value="square">Square</option>
-          <option value="invisible">Invisible</option>
+          <option value="point-round">Round</option>
+          <option value="point-square">Square</option>
+          <option value="point-invisible">Invisible</option>
         </select>
         <input name="size" type="number" placeholder="Size (px)" value="64" />
         <input name="move" type="button" class="secondary" value="Move" />

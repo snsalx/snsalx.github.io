@@ -1,3 +1,4 @@
+// Initialization
 let sectionTemplate = document.getElementById("section-template").content;
 let pointTemplate = document.getElementById("point-template").content;
 let sections = document.getElementById("section-container");
@@ -5,11 +6,15 @@ let sections = document.getElementById("section-container");
 document.getElementById("add-section").addEventListener("click", createSection);
 document.getElementById("download-zip").addEventListener("click", buildZip);
 
+// Functions
 function createSection() {
   const fragment = sectionTemplate.cloneNode(true).children[0];
   const section = parseSection(fragment);
 
-  section.meta.title.addEventListener("input", rerender);
+  section.meta.title.addEventListener("input", () => {
+    fragment.id = section.meta.title.value;
+    rerender();
+  });
   section.meta.deleteSection.addEventListener("click", () => {
     fragment.remove();
     rerender();
@@ -27,12 +32,14 @@ function updateImage(section) {
 }
 
 function createPoint(section) {
-  const [point] = pointTemplate.cloneNode(true).children;
+  const point = pointTemplate.cloneNode(true).children[0];
+  point.id = crypto.randomUUID();
 
   point.elements.delete.addEventListener("click", () => point.remove());
   point.elements.move.addEventListener("click", () =>
     movePoint(section, point),
   );
+  point.addEventListener("change", () => updatePointPreview(point.id));
 
   if (!movePoint(section, point)) {
     return;
@@ -42,13 +49,16 @@ function createPoint(section) {
   rerender();
 }
 
-function movePoint(section, point) {
+function movePoint(section, pointForm) {
   function handleImageClick({ clientX, clientY }) {
     const img = section.image.getBoundingClientRect();
 
-    point.elements.x.value = clientX - img.x;
-    point.elements.y.value = clientY - img.y;
+    pointForm.elements.x.value = clientX - img.x;
+    pointForm.elements.y.value = clientY - img.y;
 
+    updatePointPreview(pointForm.id);
+
+    Object.values(pointForm).forEach((element) => (element.disabled = false));
     section.image.style.cursor = null;
     section.image.removeEventListener("click", handleImageClick);
   }
@@ -57,10 +67,36 @@ function movePoint(section, point) {
     return false;
   }
 
+  Array.from(section.imageCaption.children)
+    .find((element) => element.dataset.formId === pointForm.id)
+    ?.remove();
+  Object.values(pointForm).forEach((element) => (element.disabled = true));
   section.image.style.cursor = "crosshair";
   section.image.addEventListener("click", handleImageClick);
 
   return true;
+}
+
+function updatePointPreview(formId) {
+  const pointForm = document.getElementById(formId);
+  const section = parseSection(pointForm.parentElement.parentElement);
+  let pointPreview = Array.from(section.imageCaption.children).find(
+    (element) => element.dataset.formId === pointForm.id,
+  );
+
+  if (!pointPreview) {
+    pointPreview = document.createElement("a");
+    section.imageCaption.appendChild(pointPreview);
+  }
+
+  const size = pointForm.elements.size.value;
+  pointPreview.classList = [pointForm.elements.type.value];
+  pointPreview.href = "#" + pointForm.elements.sectionLink.value;
+  pointPreview.style.left = pointForm.elements.x.value - size / 2 + "px";
+  pointPreview.style.top = pointForm.elements.y.value - size / 2 + "px";
+  pointPreview.style.width = size + "px";
+  pointPreview.style.height = size + "px";
+  pointPreview.dataset.formId = pointForm.id;
 }
 
 function buildZip() {
