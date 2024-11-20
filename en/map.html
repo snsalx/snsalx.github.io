@@ -93,12 +93,12 @@
           <label>
             Title
             <div role="group">
-              <input type="text" name="title" />
+              <input name="title" type="text" />
               <input
+                name="deleteSection"
                 type="button"
                 class="contrast"
                 value="Delete section"
-                name="deleteSection"
               />
             </div>
           </label>
@@ -110,14 +110,14 @@
 
           <label>
             Source
-            <input type="url" name="soruce" />
+            <input name="soruce" type="url" />
           </label>
 
           <label>
             Image
             <input
-              type="file"
               name="image"
+              type="file"
               accept="image/png, image/jpeg, image/svg+xml"
             />
           </label>
@@ -149,20 +149,20 @@
 
     <template id="point-template">
       <form class="grid">
-        <div role="group">
-          <select name="sectionLink" aria-label="Point link">
-            <option selected disabled value="">Links to...</option>
-          </select>
-          <select name="type" aria-label="Point type">
-            <option selected disabled value="">Type...</option>
-            <option>Square</option>
-            <option>Round</option>
-            <option>Invisible</option>
-          </select>
-          <input type="number" name="size" placeholder="Size (px)" />
-          <input type="button" name="move" class="secondary" value="Move" />
-          <input type="button" name="delete" class="contrast" value="Delete" />
-        </div>
+        <select name="sectionLink" aria-label="Point link">
+          <option selected disabled value="">Links to...</option>
+        </select>
+        <select name="type" aria-label="Point type">
+          <option selected disabled value="">Type...</option>
+          <option value="square">Square</option>
+          <option value="round">Round</option>
+          <option value="invisible">Invisible</option>
+        </select>
+        <input name="size" type="number" placeholder="Size (px)" value="64" />
+        <input name="move" type="button" class="secondary" value="Move" />
+        <input name="x" type="hidden" />
+        <input name="y" type="hidden" />
+        <input name="delete" type="button" class="contrast" value="Delete" />
       </form>
     </template>
 

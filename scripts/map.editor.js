@@ -24,9 +24,37 @@ function createPoint(section) {
   const [point] = pointTemplate.cloneNode(true).children;
 
   point.elements.delete.addEventListener("click", () => point.remove());
+  point.elements.move.addEventListener("click", () =>
+    movePoint(section, point),
+  );
+
+  if (!movePoint(section, point)) {
+    return;
+  }
 
   section.points.appendChild(point);
   rerender();
+}
+
+function movePoint(section, point) {
+  function handleImageClick({ clientX, clientY }) {
+    const img = section.image.getBoundingClientRect();
+
+    point.elements.x.value = clientX - img.x;
+    point.elements.y.value = clientY - img.y;
+
+    section.image.style.cursor = null;
+    section.image.removeEventListener("click", handleImageClick);
+  }
+
+  if (!confirm("Click on the image to set the point's position")) {
+    return false;
+  }
+
+  section.image.style.cursor = "crosshair";
+  section.image.addEventListener("click", handleImageClick);
+
+  return true;
 }
 
 function buildZip() {
@@ -83,6 +111,7 @@ function listSections() {
 function parseSection(domSection) {
   return {
     meta: domSection.children[0],
+    image: domSection.querySelector("img"),
     points: domSection.children[2],
     addPoint: domSection.children[3],
   };
