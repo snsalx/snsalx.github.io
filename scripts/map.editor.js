@@ -80,9 +80,10 @@ function movePoint(section, pointForm) {
   return true;
 }
 
-function updatePointPreview(formId) {
+function updatePointPreview(formId, sectionOverwrite, linkOverwrite) {
   const pointForm = document.getElementById(formId);
-  const section = parseSection(pointForm.parentElement.parentElement);
+  const section =
+    sectionOverwrite || parseSection(pointForm.parentElement.parentElement);
   let pointPreview = Array.from(section.imageCaption.children).find(
     (element) => element.dataset.formId === pointForm.id,
   );
@@ -94,7 +95,8 @@ function updatePointPreview(formId) {
 
   const size = pointForm.elements.size.value;
   pointPreview.classList = [pointForm.elements.type.value];
-  pointPreview.href = "#" + pointForm.elements.sectionLink.value;
+  pointPreview.href =
+    linkOverwrite || "#" + pointForm.elements.sectionLink.value;
   pointPreview.style.left = pointForm.elements.x.value - size / 2 + "px";
   pointPreview.style.top = pointForm.elements.y.value - size / 2 + "px";
   pointPreview.style.width = size + "px";
@@ -119,6 +121,56 @@ function buildZip() {
   zip.file("data.json", JSON.stringify(json));
 
   zip.generateAsync({ type: "blob" }).then((blob) => saveAs(blob, "map.zip"));
+}
+
+function generateViewer(section) {
+  const viewer = document.createElement("viewer");
+
+  const title = document.createElement("h2");
+  title.innerText = section.meta.elements.title.value;
+  viewer.appendChild(title);
+
+  if (section.meta.elements.description.value) {
+    const description = document.createElement("div");
+    section.meta.description.value
+      .split("\n")
+      .filter(Boolean)
+      .forEach((paragraph) => {
+        const p = document.createElement("p");
+        p.innerText = paragraph;
+        description.appendChild(p);
+      });
+    viewer.appendChild(description);
+  }
+
+  if (section.meta.elements.source.value) {
+    const source = document.createElement("a");
+    source.href = section.meta.elements.source.value;
+    source.innerText = "source";
+    viewer.appendChild(source);
+  }
+
+  const figure = document.createElement("figure");
+  figure.style.position = "relative";
+  viewer.appendChild(figure);
+
+  const image = document.createElement("img");
+  for (const file of section.meta.image.files) {
+    image.src = file.name;
+  }
+  figure.appendChild(image);
+
+  const points = document.createElement("figcaption");
+  figure.appendChild(points);
+  Array.from(section.points.children).map((form) =>
+    updatePointPreview(
+      form.id,
+      parseSection(viewer),
+      "#" + section.meta.elements.title.value,
+    ),
+  );
+
+  return viewer;
 }
 
 function rerender() {
