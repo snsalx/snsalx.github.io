@@ -71,7 +71,7 @@ function movePoint(section, pointForm) {
     section.image.removeEventListener("click", handleImageClick);
   }
 
-  if (!confirm("Click on the image to set the point's position")) {
+  if (!confirm("Нажмите на изображение, чтобы указать положение точки")) {
     return false;
   }
 

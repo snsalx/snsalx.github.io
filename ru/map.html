@@ -25,86 +25,56 @@
         border: 1px solid var(--pico-color);
       }
     </style>
-    <title>Map by Sensei Alex</title>
+    <title>Карта</title>
   </head>
   <body>
-    <header class="container">
-      <nav>
-        <ul>
-          <li>
-            <a class="profile secondary" href="/en">
-              <img
-                src="https://avatars.githubusercontent.com/u/109967128"
-                alt="avatar"
-              />
-              <h1>
-                <span>SnsAlx</span>
-              </h1>
-              <small>
-                <span>a.k.a.</span>
-                <b>Sensei Alex</b>
-              </small>
-            </a>
-          </li>
-        </ul>
-        <ul>
-          <li><a href="/en/map.html" aria-current="page">map</a></li>
-          <li><a href="/en/basics.html">basics</a></li>
-          <li><a href="/">ru</a></li>
-        </ul>
-      </nav>
-    </header>
-
     <main class="container">
       <section>
-        <h2>Map</h2>
+        <h1>Карта</h1>
         <p>
-          A generator for interactive maps. One such map will be deployed at
-          kubstu.
+          Генератор интерактивных карт. Одна из этих карт будет размещена в
+          КубГТУ.
         </p>
         <p>
-          The data is organized in <b>sections</b>, each section has an image, a
-          title, and a description. You can place points on the image, points
-          are links to other sections.
+          Данные организованы в <b>разделы</b>, каждый раздел имеет изображение,
+          название и описание. На изображении можно ставить точки, точки это
+          ссылки на другие разделы.
         </p>
         <p>
-          The output of the editor is a zip archive containing a site that
-          displays the map. The archive can be hosted by any static server or
-          uploaded back for further editing.
+          На выходе редактора получается zip-архив, содержащий сайт, который
+          отображающий карту. Архив может быть размещен на любом статическом
+          сервере
+          <del>(TODO) или загружен обратно для дальнейшего редактирования.</del>
         </p>
-        <p>To view it on your computer, unzip it and open index.html</p>
+        <p>
+          Чтобы просмотреть его на компьютере, распакуйте его и откройте файл
+          index.html.
+        </p>
         <hr />
       </section>
 
-      <h2>Editor</h2>
-      <div class="grid">
-        <p>You can upload a map that you generated before to edit it</p>
-        <input
-          id="upload-zip"
-          type="file"
-          accept="application/zip, application/x-zip-compressed"
-        />
-      </div>
-
-      <h3>Sections</h3>
+      <h2>Редактор</h2>
+      <h3>Разделы</h3>
       <div id="section-container"></div>
       <div class="grid">
-        <button id="add-section" class="outline contrast">Add a section</button>
+        <button id="add-section" class="outline contrast">
+          Добавить раздел
+        </button>
         <button id="download-zip" class="outline secondary">
-          Download site
+          Скачать сайт
         </button>
       </div>
     </main>
 
     <footer class="container">
-      <small> map <b>v1</b> </small>
+      <small> карта <b>v1</b> </small>
     </footer>
 
     <template id="section-template">
       <section>
         <form>
           <label>
-            Title
+            Название*
             <div role="group">
               <input name="title" type="text" />
               <input
@@ -117,17 +87,17 @@
           </label>
 
           <label>
-            Description
+            Описание*
             <textarea name="description"></textarea>
           </label>
 
           <label>
-            Source
+            Источник
             <input name="source" type="url" />
           </label>
 
           <label>
-            Image
+            Изображение
             <input
               name="image"
               type="file"
@@ -141,9 +111,9 @@
           </figure>
         </form>
 
-        <h4>Points</h4>
+        <h4>Точки</h4>
         <div name="point-container"></div>
-        <input type="button" name="appendPoint" value="Add a point" />
+        <input type="button" name="appendPoint" value="Добавить точку" />
 
         <hr />
       </section>
@@ -152,18 +122,23 @@
     <template id="point-template">
       <form class="grid">
         <select name="sectionLink" aria-label="Point link">
-          <option selected disabled value="">Links to...</option>
+          <option selected disabled value="">Ссылается на...</option>
         </select>
-        <select name="type" aria-label="Point type">
-          <option value="point-round">Round</option>
-          <option value="point-square">Square</option>
-          <option value="point-invisible">Invisible</option>
+        <select name="type" aria-label="Тип точки">
+          <option value="point-round">Круглая</option>
+          <option value="point-square">Квадратная</option>
+          <option value="point-invisible">Невидимая</option>
         </select>
-        <input name="size" type="number" placeholder="Size (px)" value="64" />
-        <input name="move" type="button" class="secondary" value="Move" />
+        <input name="size" type="number" placeholder="Размер (px)" value="64" />
+        <input
+          name="move"
+          type="button"
+          class="secondary"
+          value="Переместить"
+        />
         <input name="x" type="hidden" />
         <input name="y" type="hidden" />
-        <input name="delete" type="button" class="contrast" value="Delete" />
+        <input name="delete" type="button" class="contrast" value="Удалить" />
       </form>
     </template>
 
