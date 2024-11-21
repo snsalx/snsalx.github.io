@@ -37,7 +37,12 @@ function createPoint(section) {
   const point = pointTemplate.cloneNode(true).children[0];
   point.id = crypto.randomUUID();
 
-  point.elements.delete.addEventListener("click", () => point.remove());
+  point.elements.delete.addEventListener("click", () => {
+    Array.from(section.imageCaption.children)
+      .find((element) => element.dataset.formId === point.id)
+      .remove();
+    point.remove()
+  });
   point.elements.move.addEventListener("click", () =>
     movePoint(section, point),
   );
