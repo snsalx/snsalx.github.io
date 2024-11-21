@@ -178,7 +178,7 @@ function buildZip() {
       // Also I didn't take any breaks so I no longer think properly
       // Deal with it
       for (const file of section.meta.image.files) {
-        return [file.name, file.bytes(), { base64: true }];
+        return [file.name, file, { base64: true }];
       }
     })
     .filter(Boolean);
