@@ -17,19 +17,21 @@
         position: relative;
       }
 
-      .marker {
+      .marker,
+      .corner {
         position: absolute;
         width: 30px;
         height: 30px;
-        background: #80f;
+        border-radius: var(--pico-border-radius);
+        background: #a5d601; /* green */
       }
 
       .left {
-        background: #f00;
+        background: #d93526; /* red */
       }
 
       .right {
-        background: #0f0;
+        background: #3c71f7; /* blue */
       }
     </style>
   </head>
@@ -65,9 +67,41 @@
     <main class="container">
       <section>
         <h2>Wall</h2>
-        <p>test</p>
+        <p>Turns any wall into a touchscreen</p>
+        <p>Requirements</p>
+        <ul>
+          <li>A projector</li>
+          <li>2 webcames, ideally same model</li>
+        </ul>
       </section>
-      <section id="video-container"></section>
+      <section>
+        <h3>Calibration</h3>
+        <p>
+          <b><em>Warning:</em></b>
+          <span
+            >There must only be one person in frame during the calibration
+            sequence</span
+          >
+        </p>
+        <form id="calibration">
+          <fieldset class="grid">
+            <input name="tl" type="button" value="left hand is top left" />
+            <input name="tr" type="button" value="right hand is top right" />
+          </fieldset>
+          <fieldset class="grid">
+            <input name="bl" type="button" value="left hand is bottom left" />
+            <input name="br" type="button" value="right hand is bottom right" />
+          </fieldset>
+        </form>
+      </section>
+      <section>
+        <h3>Camera feeds</h3>
+        <div id="video-container"></div>
+      </section>
+      <section>
+        <h3>Coordinate grid</h3>
+        <p>TODO</p>
+      </section>
     </main>
 
     <footer class="container">

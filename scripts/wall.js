@@ -1,10 +1,74 @@
 const videoContainer = document.getElementById("video-container");
+const calibrationButtons = document.getElementById("calibration").elements;
 const inputs = [];
 
-loadCameras();
+setupCalibration();
+setupCameras();
 frame();
 
-async function loadCameras() {
+function setupCalibration() {
+  calibrationButtons.tl.addEventListener("click", async () =>
+    inputs.forEach(async (input) => {
+      const [person] = await trackWrists(input);
+      const [wrist, _] = person;
+      input.calibration.topLeft = [wrist.x, wrist.y];
+
+      input.figure.querySelector(".top-left")?.remove();
+      const corner = document.createElement("div");
+      corner.classList = ["corner top-left"];
+      corner.style.left = wrist.x * 100 + "%";
+      corner.style.top = wrist.y * 100 + "%";
+      input.figure.appendChild(corner);
+    }),
+  );
+
+  calibrationButtons.tr.addEventListener("click", async () =>
+    inputs.forEach(async (input) => {
+      const [person] = await trackWrists(input);
+      const [_, wrist] = person;
+      input.calibration.topLeft = [wrist.x, wrist.y];
+
+      input.figure.querySelector(".top-right")?.remove();
+      const corner = document.createElement("div");
+      corner.classList = ["corner top-right"];
+      corner.style.left = wrist.x * 100 + "%";
+      corner.style.top = wrist.y * 100 + "%";
+      input.figure.appendChild(corner);
+    }),
+  );
+
+  calibrationButtons.bl.addEventListener("click", async () =>
+    inputs.forEach(async (input) => {
+      const [person] = await trackWrists(input);
+      const [wrist, _] = person;
+      input.calibration.topLeft = [wrist.x, wrist.y];
+
+      input.figure.querySelector(".bottom-left")?.remove();
+      const corner = document.createElement("div");
+      corner.classList = ["corner bottom-left"];
+      corner.style.left = wrist.x * 100 + "%";
+      corner.style.top = wrist.y * 100 + "%";
+      input.figure.appendChild(corner);
+    }),
+  );
+
+  calibrationButtons.br.addEventListener("click", async () =>
+    inputs.forEach(async (input) => {
+      const [person] = await trackWrists(input);
+      const [_, wrist] = person;
+      input.calibration.topLeft = [wrist.x, wrist.y];
+
+      input.figure.querySelector(".bottom-right")?.remove();
+      const corner = document.createElement("div");
+      corner.classList = ["corner bottom-right"];
+      corner.style.left = wrist.x * 100 + "%";
+      corner.style.top = wrist.y * 100 + "%";
+      input.figure.appendChild(corner);
+    }),
+  );
+}
+
+async function setupCameras() {
   const devices = await navigator.mediaDevices.enumerateDevices();
   const cameras = devices.filter((device) => device.kind === "videoinput");
 
@@ -29,9 +93,17 @@ async function loadCameras() {
         enableSmoothing: true,
       },
     );
-    inputs.push({ detector, video, figure });
+
+    const calibration = {
+      topLeft: [0, 0],
+      topRight: [0, 0],
+      bottomLeft: [0, 1],
+      bottomRight: [1, 1],
+    };
 
     videoContainer.appendChild(figure);
+
+    inputs.push({ detector, video, figure, calibration });
   }
 }
 
@@ -63,15 +135,12 @@ async function trackWrists(input) {
     const [leftWrist, rightWrist] = person;
 
     const markerL = document.createElement("div");
-    const markerR = document.createElement("div");
     markerL.classList = ["marker left"];
-    markerR.classList = ["marker right"];
-
-    markerL.style.display = "block";
     markerL.style.left = leftWrist.x * 100 + "%";
     markerL.style.top = leftWrist.y * 100 + "%";
 
-    markerL.style.display = "block";
+    const markerR = document.createElement("div");
+    markerR.classList = ["marker right"];
     markerR.style.left = rightWrist.x * 100 + "%";
     markerR.style.top = rightWrist.y * 100 + "%";
     input.figure.appendChild(markerL);
