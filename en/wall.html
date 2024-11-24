@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.lime.min.css"
+    />
+    <link href="/main.css" rel="stylesheet" />
+    <title>Sensei Alex</title>
+    <style>
+      figure {
+        width: fit-content;
+        height: fit-content;
+        position: relative;
+      }
+
+      .marker {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: #80f;
+      }
+
+      .left {
+        background: #f00;
+      }
+
+      .right {
+        background: #0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li>
+            <a class="profile secondary" href="/en">
+              <img
+                src="https://avatars.githubusercontent.com/u/109967128"
+                alt="avatar"
+              />
+              <h1>
+                <span>SnsAlx</span>
+              </h1>
+              <small>
+                <span>a.k.a.</span>
+                <b>Sensei Alex</b>
+              </small>
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <li><a href="/en/map.html">map</a></li>
+          <li><a href="/en/basics.html">basics</a></li>
+          <li><a href="/en/wall.html" aria-current="page">wall</a></li>
+          <li><a href="/">ru</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section>
+        <h2>Wall</h2>
+        <p>test</p>
+      </section>
+      <section id="video-container"></section>
+    </main>
+
+    <footer class="container">
+      <small>
+        <a href="https://github.com/snsalx">
+          <span>アレックス先生</span>
+        </a>
+      </small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+    <script src="/scripts/wall.js"></script>
+  </body>
+</html>
