@@ -6,6 +6,7 @@ let uploadZipButton = document.getElementById("upload-zip");
 
 document.getElementById("add-section").addEventListener("click", createSection);
 document.getElementById("download-zip").addEventListener("click", buildZip);
+addEventListener("resize", recalculatePoints);
 uploadZipButton.addEventListener("change", parseZip);
 
 // Functions
@@ -69,8 +70,8 @@ function movePoint(section, pointForm) {
   function handleImageClick({ clientX, clientY }) {
     const img = section.image.getBoundingClientRect();
 
-    pointForm.elements.x.value = clientX - img.x;
-    pointForm.elements.y.value = clientY - img.y;
+    pointForm.elements.x.value = ((clientX - img.x) / img.width) * 100;
+    pointForm.elements.y.value = ((clientY - img.y) / img.height) * 100;
 
     updatePointPreview(pointForm.id);
 
@@ -110,11 +111,19 @@ function updatePointPreview(formId, sectionOverwrite, linkOverwrite) {
   pointPreview.classList = [pointForm.elements.type.value];
   pointPreview.href =
     linkOverwrite || "#" + pointForm.elements.sectionLink.value;
-  pointPreview.style.left = pointForm.elements.x.value - size / 2 + "px";
-  pointPreview.style.top = pointForm.elements.y.value - size / 2 + "px";
+  pointPreview.style.left = pointForm.elements.x.value + "%";
+  pointPreview.style.top = pointForm.elements.y.value + "%";
   pointPreview.style.width = size + "px";
   pointPreview.style.height = size + "px";
   pointPreview.dataset.formId = pointForm.id;
+}
+
+function recalculatePoints() {
+  listSections().map((section) => {
+    Array.from(section.points.children).map((point) =>
+      updatePointPreview(point.id, section),
+    );
+  });
 }
 
 function buildZip() {
@@ -131,7 +140,7 @@ function buildZip() {
     }));
   const json = {
     sections: jsonSections,
-    version: "1",
+    version: "2.0",
   };
 
   const sections = listSections();
@@ -232,18 +241,39 @@ async function parseZip() {
       const list = new DataTransfer();
       list.items.add(file);
       section.meta.image.files = list.files;
+      if (json.version === "1") {
+        section.image.style.width = "auto"; // to let it apply the scaling later
+      }
       updateImage(section);
     }
 
-    data.points.map((pointData) => {
-      const point = createPoint(section, true);
-      point.elements.sectionLink.value = pointData.sectionLink;
-      point.elements.type.value = pointData.type;
-      point.elements.size.value = pointData.size;
-      point.elements.x.value = pointData.x;
-      point.elements.y.value = pointData.y;
-      updatePointPreview(point.id);
-    });
+    data.points.map((pointData) => {});
+
+    section.image.onload = () => {
+      data.points.map((pointData) => {
+        const point = createPoint(section, true);
+        point.elements.sectionLink.value = pointData.sectionLink;
+        point.elements.type.value = pointData.type;
+        point.elements.size.value = pointData.size;
+
+        if (json.version === "1") {
+          const { width, height } = section.image.getBoundingClientRect();
+
+          point.elements.x.value = (pointData.x / width) * 100;
+          point.elements.y.value = (pointData.y / height) * 100;
+        } else {
+          point.elements.x.value = pointData.x;
+          point.elements.y.value = pointData.y;
+        }
+
+        updatePointPreview(point.id);
+      });
+
+      if (json.version === "1") {
+        section.image.style.width = null; // we can scale it now
+      }
+    };
+
     rerender();
   });
 }
