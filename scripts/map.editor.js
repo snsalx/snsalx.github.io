@@ -2,9 +2,11 @@
 let sectionTemplate = document.getElementById("section-template").content;
 let pointTemplate = document.getElementById("point-template").content;
 let sections = document.getElementById("section-container");
+let uploadZipButton = document.getElementById("upload-zip");
 
 document.getElementById("add-section").addEventListener("click", createSection);
 document.getElementById("download-zip").addEventListener("click", buildZip);
+uploadZipButton.addEventListener("change", parseZip);
 
 // Functions
 function createSection() {
@@ -25,6 +27,8 @@ function createSection() {
 
   sections.appendChild(fragment);
   rerender();
+
+  return section;
 }
 
 function updateImage(section) {
@@ -33,7 +37,7 @@ function updateImage(section) {
   }
 }
 
-function createPoint(section) {
+function createPoint(section, empty) {
   const point = pointTemplate.cloneNode(true).children[0];
   point.id = crypto.randomUUID();
 
@@ -49,12 +53,16 @@ function createPoint(section) {
   point.addEventListener("change", () => updatePointPreview(point.id));
   point.addEventListener("submit", () => event.preventDefault());
 
-  if (!movePoint(section, point)) {
-    return;
+  if (!empty) {
+    if (!movePoint(section, point)) {
+      return;
+    }
   }
 
   section.points.appendChild(point);
   rerender();
+
+  return point;
 }
 
 function movePoint(section, pointForm) {
@@ -189,6 +197,55 @@ function buildZip() {
   images.forEach((args) => zip.file(...args));
 
   zip.generateAsync({ type: "blob" }).then((blob) => saveAs(blob, "map.zip"));
+}
+
+async function parseZip() {
+  let blob;
+  for (const file of uploadZipButton.files) {
+    blob = file;
+  }
+
+  const zip = new JSZip();
+  await zip.loadAsync(blob);
+
+  const json = JSON.parse(await zip.file("data.json").async("string"));
+  const images = await Promise.all(
+    Object.keys(zip.files)
+      .filter((name) => name !== "index.html" && name !== "data.json")
+      .map(async (name) => {
+        const data = await zip.file(name).async("blob");
+        return { name, data };
+      }),
+  );
+
+  json.sections.map((data) => {
+    const section = createSection();
+
+    section.meta.title.value = data.meta.title;
+    section.meta.description.value = data.meta.description;
+    section.meta.source.value = data.meta.source;
+
+    const imageName = data.meta.image;
+    if (imageName) {
+      const imageData = images.find((image) => image.name === imageName);
+      const file = new File([imageData.data], imageName);
+      const list = new DataTransfer();
+      list.items.add(file);
+      section.meta.image.files = list.files;
+      updateImage(section);
+    }
+
+    data.points.map((pointData) => {
+      const point = createPoint(section, true);
+      point.elements.sectionLink.value = pointData.sectionLink;
+      point.elements.type.value = pointData.type;
+      point.elements.size.value = pointData.size;
+      point.elements.x.value = pointData.x;
+      point.elements.y.value = pointData.y;
+      updatePointPreview(point.id);
+    });
+    rerender();
+  });
 }
 
 function generateViewer(section) {
