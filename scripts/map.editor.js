@@ -231,6 +231,7 @@ async function parseZip() {
     const section = createSection();
 
     section.meta.title.value = data.meta.title;
+    section.fragment.id = data.meta.title;
     section.meta.description.value = data.meta.description;
     section.meta.source.value = data.meta.source;
 
@@ -368,5 +369,6 @@ function parseSection(domSection) {
     imageCaption: domSection.querySelector("figcaption"),
     points: domSection.children[2],
     addPoint: domSection.children[3],
+    fragment: domSection,
   };
 }
