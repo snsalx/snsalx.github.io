@@ -80,10 +80,6 @@ function movePoint(section, pointForm) {
     section.image.removeEventListener("click", handleImageClick);
   }
 
-  if (!confirm("Нажмите на изображение, чтобы указать положение точки")) {
-    return false;
-  }
-
   Array.from(section.imageCaption.children)
     .find((element) => element.dataset.formId === pointForm.id)
     ?.remove();
