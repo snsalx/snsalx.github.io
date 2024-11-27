@@ -47,8 +47,7 @@
         <p>
           На выходе редактора получается zip-архив, содержащий сайт, который
           отображающий карту. Архив может быть размещен на любом статическом
-          сервере
-          <del>(TODO) или загружен обратно для дальнейшего редактирования.</del>
+          сервере или загружен обратно для дальнейшего редактирования.
         </p>
         <p>
           Чтобы просмотреть его на компьютере, распакуйте его и откройте файл
@@ -58,6 +57,17 @@
       </section>
 
       <h2>Редактор</h2>
+      <div class="grid">
+        <p>
+          Вы можете загрузить карту, созданную ранее, чтобы отредактировать ее
+        </p>
+        <input
+          id="upload-zip"
+          type="file"
+          accept="application/zip, application/x-zip-compressed"
+        />
+      </div>
+
       <h3>Разделы</h3>
       <div id="section-container"></div>
       <div class="grid">
@@ -71,14 +81,14 @@
     </main>
 
     <footer class="container">
-      <small> карта <b>v2.0.2</b> </small>
+      <small> карта <b>v2.1.0</b> </small>
     </footer>
 
     <template id="section-template">
       <section>
         <form>
           <label>
-            Название*
+            Название
             <div role="group">
               <input name="title" type="text" />
               <input
@@ -91,7 +101,7 @@
           </label>
 
           <label>
-            Описание*
+            Описание
             <textarea name="description"></textarea>
           </label>
 
