@@ -15,7 +15,7 @@ function createSection() {
   const section = parseSection(fragment);
 
   section.meta.title.addEventListener("input", () => {
-    fragment.id = section.meta.title.value;
+    fragment.id = section.meta.title.value.trim();
     rerender();
   });
   section.meta.deleteSection.addEventListener("click", () => {
@@ -230,8 +230,9 @@ async function parseZip() {
   json.sections.map((data) => {
     const section = createSection();
 
-    section.meta.title.value = data.meta.title;
-    section.fragment.id = data.meta.title;
+    const title = data.meta.title.trim();
+    section.meta.title.value = title;
+    section.fragment.id = title;
     section.meta.description.value = data.meta.description;
     section.meta.source.value = data.meta.source;
 
@@ -253,7 +254,7 @@ async function parseZip() {
     section.image.onload = () => {
       data.points.map((pointData) => {
         const point = createPoint(section, true);
-        point.elements.sectionLink.value = pointData.sectionLink;
+        point.elements.sectionLink.value = pointData.sectionLink.trim();
         point.elements.type.value = pointData.type;
         point.elements.size.value = pointData.size;
 
@@ -334,7 +335,7 @@ function rerender() {
   const sections = listSections();
 
   const sectionTitles = sections
-    .map((section) => section.meta.elements.title.value)
+    .map((section) => section.meta.elements.title.value.trim())
     .filter(Boolean);
 
   const options = sectionTitles.map((title) => {
