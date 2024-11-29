@@ -16,3 +16,6 @@ languageDirection = 'ltr'
 languageName = 'Русский'
 weight = 2
 
+[markup.highlight]
+noClasses = false
+
