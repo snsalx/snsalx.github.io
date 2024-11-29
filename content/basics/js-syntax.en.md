@@ -109,7 +109,7 @@ y + z; // "truetext"
 ## Template literals
 
 If you want to insert a value into a string, you can wrap the string in
-backticks (`\``) and do this:
+backticks (\`) and do this:
 ```js
 const number_left = 10;
 
