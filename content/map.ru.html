@@ -1,0 +1,123 @@
+---
+title: Карта
+---
+
+<link href="/map.css" rel="stylesheet" />
+<section>
+  <p>
+    Генератор интерактивных карт. Одна из этих карт будет размещена в
+    КубГТУ.
+  </p>
+  <p>
+    Данные организованы в <b>разделы</b>, каждый раздел имеет изображение,
+    название и описание. На изображении можно ставить точки, точки это
+    ссылки на другие разделы. Точка добавляется нажатием на кнопку, а
+    затем щелчком на изображении в том месте, где вы хотите, чтобы
+    находилась эта точка.
+  </p>
+  <p>
+    На выходе редактора получается zip-архив, содержащий сайт, который
+    отображающий карту. Архив может быть размещен на любом статическом
+    сервере или загружен обратно для дальнейшего редактирования.
+  </p>
+  <p>Чтобы просмотреть его на компьютере, распакуйте его и откройте файл index.html.</p>
+  <small><b>v2.1.1</b></small>
+  <hr />
+</section>
+
+<h2>Редактор</h2>
+<div class="grid">
+  <p>Вы можете загрузить карту, созданную ранее, чтобы отредактировать ее</p>
+  <input
+    id="upload-zip"
+    type="file"
+    accept="application/zip, application/x-zip-compressed"
+  />
+</div>
+
+<h3>Разделы</h3>
+<div id="section-container"></div>
+<div class="grid">
+  <button id="add-section" class="outline contrast">
+    Добавить раздел
+  </button>
+  <button id="download-zip" class="outline secondary">
+    Скачать сайт
+  </button>
+</div>
+
+<template id="section-template">
+  <section>
+    <form>
+      <label>
+        Название
+        <div role="group">
+          <input name="title" type="text" />
+          <input
+            name="deleteSection"
+            type="button"
+            class="contrast"
+            value="Удалить раздел"
+          />
+        </div>
+      </label>
+
+      <label>
+        Описание
+        <textarea name="description"></textarea>
+      </label>
+
+      <label>
+        Источник
+        <input name="source" type="url" />
+      </label>
+
+      <label>
+        Изображение
+        <input
+          name="image"
+          type="file"
+          accept="image/png, image/jpeg, image/svg+xml"
+        />
+      </label>
+
+      <figure style="position: relative">
+        <img />
+        <figcaption></figcaption>
+      </figure>
+    </form>
+
+    <h4>Точки</h4>
+    <div name="point-container"></div>
+    <input type="button" name="appendPoint" value="Добавить точку" />
+
+    <hr />
+  </section>
+</template>
+
+<template id="point-template">
+  <form class="grid">
+    <select name="sectionLink" aria-label="Point link">
+      <option selected disabled value="">Ссылается на...</option>
+    </select>
+    <select name="type" aria-label="Тип точки">
+      <option value="point-round">Круглая</option>
+      <option value="point-square">Квадратная</option>
+      <option value="point-invisible">Невидимая</option>
+    </select>
+    <input name="size" type="number" placeholder="Размер (px)" value="64" />
+    <input
+      name="move"
+      type="button"
+      class="secondary"
+      value="Переместить"
+    />
+    <input name="x" type="hidden" />
+    <input name="y" type="hidden" />
+    <input name="delete" type="button" class="contrast" value="Удалить" />
+  </form>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="/scripts/map.editor.js"></script>
