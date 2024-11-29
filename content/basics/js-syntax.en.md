@@ -54,7 +54,39 @@ Some types based on objects:
 3. `Map` (`new Map()`, like regular objects, but for data that needs to change often)
 4. `Function`s are technically implemented via objects, though that's unimportant
 
+Note that if the object is `const`, it can't be reassigned, but it can be mutated.
+```js
+const user = {
+  name: "Joe",
+  age: 32,
+};
+
+user.age = 33; // no error, field accessed by dot notation
+```
+
 Sidenote: `typeof(null)` responds with `"object"`, which is considered a bug.
+
+## Destructuring nested data
+
+If you want to create variables for some object keys, you can either declare them manually
+or use the destructuring syntax.
+
+```js
+const user = {
+  name: "Joe",
+  age: 32,
+};
+
+const { name, age } = user; // same names as in the object
+const { name: userName, age: userAge } = user; // custom names
+```
+
+The same thing is available for arrays.
+
+```js
+const week = ["Sunday", "Monday", "Tuesday", "Wednesday"];
+const [sun, mon, tue, wed] = week
+```
 
 ## Type coercion
 
