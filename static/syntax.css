@@ -1,5 +1,5 @@
-/* Background */ .bg { color:#4c4f69;background-color:#eff1f5; }
-/* PreWrapper */ .chroma { color:#4c4f69;background-color:#eff1f5; }
+/* Background */ .bg { color:#4c4f69;background-color:#dce0e8; }
+/* PreWrapper */ .chroma { color:#4c4f69;background-color:#dce0e8; }
 /* Other */ .chroma .x {  }
 /* Error */ .chroma .err { color:#d20f39 }
 /* CodeLine */ .chroma .cl {  }
@@ -86,8 +86,8 @@
 /* TextWhitespace */ .chroma .w {  }
 
 @media (prefers-color-scheme: dark) {
-  /* Background */ .bg { color:#cad3f5;background-color:#24273a; }
-  /* PreWrapper */ .chroma { color:#cad3f5;background-color:#24273a; }
+  /* Background */ .bg { color:#cad3f5;background-color:#181926; }
+  /* PreWrapper */ .chroma { color:#cad3f5;background-color:#181926; }
   /* Other */ .chroma .x {  }
   /* Error */ .chroma .err { color:#ed8796 }
   /* CodeLine */ .chroma .cl {  }
