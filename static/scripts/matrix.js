@@ -1,4 +1,31 @@
-// Init
+// Serial connection
+let port;
+let encoder = new TextEncoderStream();
+let connection;
+
+async function connect() {
+  if (!("serial" in navigator)) {
+    alert("Unsupported browser");
+    return
+  }
+  
+  port = await navigator.serial.requestPort();
+  await port.open({ baudRate: 9600 });
+
+  encoder.readable.pipeTo(port.writable);
+  connection = encoder.writable.getWriter();
+}
+
+async function send(text) {
+  if (!connection) {
+    return
+  }
+
+  console.log("Sending packet:", text);
+  await connection.write(text+"\n");
+}
+
+// Preview
 const matrix = document.getElementById("matrix");
 const ctx = matrix.getContext("2d");
 const rect = matrix.getBoundingClientRect();
@@ -15,24 +42,18 @@ const gap = 4;
 const cellW = width / resolutionHorizontal;
 const cellH = height / resolutionVertical;
 
-function point(x, y, r, g, b) {
-  console.log(`Painting pixel ${x}x${y}`)
+// Init
+async function initMatrix() {
+  await connect();
 
-  const xInPx = x * cellW;
-  const yInPx = y * cellH;
-
-  ctx.fillStyle = `rgb(30, 30, 46)`;
-  ctx.fillRect(xInPx, yInPx, cellW, cellH);
-
-  ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-  ctx.fillRect(xInPx + gap, yInPx + gap, cellW - gap*2, cellH - gap*2);
-}
-
-for (let i = 0; i < resolutionVertical; i++) {
-  for (let j = 0; j < resolutionHorizontal; j++) {
-    point(j, i, 0, 0, 0);
+  for (let i = 0; i < resolutionVertical; i++) {
+    for (let j = 0; j < resolutionHorizontal; j++) {
+      point(j, i, 0, 0, 0);
+    }
   }
 }
+
+initMatrix()
 
 // Color selector
 let color;
@@ -85,7 +106,7 @@ document.addEventListener("keydown", event => {
   }
 })
 
-// Click handler
+// Mouse handler
 matrix.addEventListener("mousemove", handleMouse);
 matrix.addEventListener("click", handleMouse);
 function handleMouse(event) {
@@ -98,3 +119,22 @@ function handleMouse(event) {
 
   point(Math.floor(x), Math.floor(y), ...color);
 }
+
+// Drawing logic
+function point(x, y, r, g, b) {
+  console.log(`Painting pixel ${x}x${y}`)
+
+  const xInPx = x * cellW;
+  const yInPx = y * cellH;
+
+  ctx.fillStyle = `rgb(30, 30, 46)`;
+  ctx.fillRect(xInPx, yInPx, cellW, cellH);
+
+  ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+  ctx.fillRect(xInPx + gap, yInPx + gap, cellW - gap*2, cellH - gap*2);
+
+  const packet = [x, y, r, g, b].join(",");
+
+  send(packet);
+}
+
