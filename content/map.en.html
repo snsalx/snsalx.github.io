@@ -1,0 +1,135 @@
+---
+title: Map
+---
+
+<link href="/map.css" rel="stylesheet" />
+
+<section>
+  <h2>Map</h2>
+  <p>
+    A generator for interactive maps. One such map will be deployed at kubstu.
+  </p>
+  <p>
+    The data is organized in <b>sections</b>, each section has an image, a
+    title, and a description. You can place points on the image, points are
+    links to other sections. The point is added by clicking the button, and then
+    clicking on the image wherever you want that point to be.
+  </p>
+  <p>
+    The output of the editor is a zip archive containing a site that displays
+    the map. The archive can be hosted by any static server or uploaded back for
+    further editing.
+  </p>
+  <p>To view it on your computer, unzip it and open index.html</p>
+  <small><b>v2.1.1</b></small>
+  <hr />
+</section>
+
+<h2>Editor</h2>
+<div class="grid">
+  <p>You can upload a map that you generated before to edit it</p>
+  <input
+    id="upload-zip"
+    type="file"
+    accept="application/zip, application/x-zip-compressed"
+  />
+</div>
+
+<h3>Sections</h3>
+<div id="section-container"></div>
+<div class="grid">
+  <button id="add-section" class="contrast">Add a section</button>
+  <button id="download-zip" class="secondary">Download site</button>
+</div>
+
+<template id="section-template">
+  <section>
+    <form>
+      <label>
+        Title
+        <div role="group">
+          <input name="title" type="text" />
+          <input
+            name="deleteSection"
+            type="button"
+            class="contrast"
+            value="Delete section"
+          />
+        </div>
+      </label>
+
+      <label>
+        Description
+        <textarea name="description"></textarea>
+      </label>
+
+      <label>
+        Source
+        <input name="source" type="url" />
+      </label>
+
+      <label>
+        Image
+        <input
+          name="image"
+          type="file"
+          accept="image/png, image/jpeg, image/svg+xml"
+        />
+      </label>
+
+      <figure style="position: relative">
+        <img />
+        <figcaption></figcaption>
+      </figure>
+    </form>
+
+    <h4>Points</h4>
+    <div name="point-container"></div>
+    <input type="button" name="appendPoint" value="Add a point" />
+
+    <hr />
+  </section>
+</template>
+
+<template id="point-template">
+  <form class="grid">
+    <select name="sectionLink" aria-label="Point link">
+      <option selected disabled value="">Links to...</option>
+    </select>
+    <select name="type" aria-label="Point type">
+      <option value="point-round">Round</option>
+      <option value="point-square">Square</option>
+      <option value="point-invisible">Invisible</option>
+    </select>
+    <input name="size" type="number" placeholder="Size (px)" value="64" />
+    <input name="move" type="button" class="secondary" value="Move" />
+    <input name="x" type="hidden" />
+    <input name="y" type="hidden" />
+    <input name="delete" type="button" class="contrast" value="Delete" />
+  </form>
+</template>
+
+<style>
+  .point-invisible,
+  .point-square,
+  .point-round {
+    position: absolute;
+    background: var(--pico-color);
+    border-radius: var(--pico-border-radius);
+    transform: translate(-50%, -50%);
+  }
+  .point-round {
+    border-radius: 100%;
+  }
+  .point-invisible {
+    background: #00000033;
+    border: 1px solid var(--pico-color);
+  }
+  img {
+    width: 100%;
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="/scripts/map.editor.js"></script>

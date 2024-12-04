@@ -1,0 +1,18 @@
+.point-invisible,
+.point-square,
+.point-round {
+  position: absolute;
+  background: var(--pico-color);
+  border-radius: var(--pico-border-radius);
+  transform: translate(-50%, -50%);
+}
+.point-round {
+  border-radius: 100%;
+}
+.point-invisible {
+  background: #00000033;
+  border: 1px solid var(--pico-color);
+}
+img {
+  width: 100%;
+}
