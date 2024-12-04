@@ -31,36 +31,13 @@
     <title>{{ .Page.Title }}</title>
   </head>
   <body>
-    <header class="container">
-      <nav>
-        <ul>
-          <li>
-            <a class="profile secondary" href="/" aria-current="page">
-              <h1>
-                <span>SnsAlx</span>
-              </h1>
-              <small>
-                <span>a.k.a.</span>
-                <b>Sensei Alex</b>
-              </small>
-            </a>
-          </li>
-        </ul>
-        <ul>
-          <li><a href="/map">map</a></li>
-          <li><a href="/basics">basics</a></li>
-          <li><a href="#">ru</a></li>
-        </ul>
-      </nav>
-    </header>
-
     <main class="container">
       {{ block "main" . }}{{end}}
     </main>
 
     <footer class="container">
       <small>
-        <a href="https://github.com/snsalx">
+        <a href="https://github.com/snsalx/snsalx">
           <span>Source code</span>
         </a>
       </small>
