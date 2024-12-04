@@ -6,9 +6,9 @@ let connection;
 async function connect() {
   if (!("serial" in navigator)) {
     alert("Unsupported browser");
-    return
+    return;
   }
-  
+
   port = await navigator.serial.requestPort();
   await port.open({ baudRate: 9600 });
 
@@ -18,11 +18,11 @@ async function connect() {
 
 async function send(text) {
   if (!connection) {
-    return
+    return;
   }
 
   console.log("Sending packet:", text);
-  await connection.write(text+"\n");
+  await connection.write(text + "\n");
 }
 
 // Preview
@@ -53,7 +53,7 @@ async function initMatrix() {
   }
 }
 
-initMatrix()
+initMatrix();
 
 // Color selector
 let color;
@@ -61,7 +61,7 @@ let color;
 const colorInput = document.getElementById("color");
 processColor();
 
-colorInput.addEventListener("change", processColor)
+colorInput.addEventListener("change", processColor);
 
 function processColor(hex) {
   if (!hex) {
@@ -74,37 +74,37 @@ function processColor(hex) {
     parseInt(hex.slice(1, 3), 16),
     parseInt(hex.slice(3, 5), 16),
     parseInt(hex.slice(5, 7), 16),
-  ]
+  ];
 }
 
-document.addEventListener("keydown", event => {
-  switch(event.key) {
+document.addEventListener("keydown", (event) => {
+  switch (event.key) {
     case "1":
-      processColor("#ff0000")
+      processColor("#ff0000");
       break;
     case "2":
-      processColor("#00ff00")
+      processColor("#00ff00");
       break;
     case "3":
-      processColor("#0000ff")
+      processColor("#0000ff");
       break;
     case "4":
-      processColor("#ffff00")
+      processColor("#ffff00");
       break;
     case "5":
-      processColor("#00ffff")
+      processColor("#00ffff");
       break;
     case "6":
-      processColor("#ff00ff")
+      processColor("#ff00ff");
       break;
     case "9":
-      processColor("#ffffff")
+      processColor("#ffffff");
       break;
     case "0":
-      processColor("#000000")
+      processColor("#000000");
       break;
   }
-})
+});
 
 // Mouse handler
 matrix.addEventListener("mousemove", handleMouse);
@@ -114,15 +114,15 @@ function handleMouse(event) {
     return;
   }
 
-  const x = (event.clientX - rect.x) / width * resolutionHorizontal;
-  const y = (event.clientY - rect.y) / height * resolutionVertical;
+  const x = ((event.clientX - rect.x) / width) * resolutionHorizontal;
+  const y = ((event.clientY - rect.y) / height) * resolutionVertical;
 
   point(Math.floor(x), Math.floor(y), ...color);
 }
 
 // Drawing logic
 function point(x, y, r, g, b) {
-  console.log(`Painting pixel ${x}x${y}`)
+  console.log(`Painting pixel ${x}x${y}`);
 
   const xInPx = x * cellW;
   const yInPx = y * cellH;
@@ -131,10 +131,9 @@ function point(x, y, r, g, b) {
   ctx.fillRect(xInPx, yInPx, cellW, cellH);
 
   ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-  ctx.fillRect(xInPx + gap, yInPx + gap, cellW - gap*2, cellH - gap*2);
+  ctx.fillRect(xInPx + gap, yInPx + gap, cellW - gap * 2, cellH - gap * 2);
 
   const packet = [x, y, r, g, b].join(",");
 
   send(packet);
 }
-

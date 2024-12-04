@@ -5,10 +5,11 @@ draft = true
 +++
 
 ## Static
-I'm going to write quite a few *articles* on this site in the next few months, so I need a good way
+
+I'm going to write quite a few _articles_ on this site in the next few months, so I need a good way
 to manage content. Writing raw HTML doesn't scale for that, and it's less readable. That's why
 I wanted to switch to markdown. Plus, duplicating and updating things like the footer
-(and the version number in it) gets tedious quickly. *That's why I want an SSG with template support.*
+(and the version number in it) gets tedious quickly. _That's why I want an SSG with template support._
 
 The first option that came in mind is [Hugo](https://gohugo.io). It's a pretty simple solution
 with fast build times and powerful template syntax. The website still needs to host some webapps, so
@@ -27,6 +28,7 @@ Adding hugo doesn't confilct with the original goals of the project, which are:
 The taxonomy and i18n features of hugo will come in handy too, I imagine.
 
 ## Wired
+
 Sometimes I'll need a server for improving UX or a desktop agent when the browser just doesn't provide
 something. I'm planning to use go and pocketbase for these situations. Both are stupid simple and more
 than fast enough in both runtime and speed of development.

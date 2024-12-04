@@ -1,5 +1,5 @@
 ---
-title: 'JS Syntax'
+title: "JS Syntax"
 date: 2024-11-29T13:16:00Z
 draft: true
 ---
@@ -7,6 +7,7 @@ draft: true
 ## Variables
 
 JS has two keywords to declare a variable:
+
 - `let` creates a normal variable that you can reassign later
 - `const` creates a variable that cannot be reassigned
 
@@ -22,9 +23,10 @@ y = "error"; // TypeError: invalid assignment to const 'y'
 
 ## Data types
 
-Are calculated by the language at the time of (re)assignment and *can* be changed.
+Are calculated by the language at the time of (re)assignment and _can_ be changed.
 
 There are 7 primitive types:
+
 1. `number` (`0.8`, `32`, `-Infinity`)
 2. `string` (`"some text"`)
 3. `boolean` (`"true"`, `"false"`)
@@ -41,6 +43,7 @@ for example if the user refused to respond.
 
 There is also the `Object` type which is anything more complex.
 Objects store key-value pairs (like variables that have a name and a value).
+
 ```js
 const user = {
   name: "Joe",
@@ -49,12 +52,14 @@ const user = {
 ```
 
 Some types based on objects:
+
 1. `Array` (`['first', 'second']` is an object where index is the key)
 2. `Date` (created via `new Date()`)
 3. `Map` (`new Map()`, like regular objects, but for data that needs to change often)
 4. `Function`s are technically implemented via objects, though that's unimportant
 
 Note that if the object is `const`, it can't be reassigned, but it can be mutated.
+
 ```js
 const user = {
   name: "Joe",
@@ -85,16 +90,17 @@ The same thing is available for arrays.
 
 ```js
 const week = ["Sunday", "Monday", "Tuesday", "Wednesday"];
-const [sun, mon, tue, wed] = week
+const [sun, mon, tue, wed] = week;
 ```
 
 ## Type coercion
 
 JS will convert types whenever possible:
+
 ```js
 let x = 1;
 let y = true;
-let z = 'text';
+let z = "text";
 
 x + y; // 2
 x + z; // "1text"
@@ -103,13 +109,14 @@ y + z; // "truetext"
 
 "1" + 1; // "11"
 "11" - 1; // 10
-"1" + 1 - 1 // 10
+"1" + 1 - 1; // 10
 ```
 
 ## Template literals
 
 If you want to insert a value into a string, you can wrap the string in
 backticks (\`) and do this:
+
 ```js
 const number_left = 10;
 
@@ -121,15 +128,17 @@ const message2 = `there are ${number_left} items left`;
 
 The simplest way to output text is the `console` object.
 It is pre-defined by the runtime, you just have to call a method on it:
+
 ```js
 console.log("debug message");
-console.warn("something might be wrong")
+console.warn("something might be wrong");
 console.error("oh no");
 ```
 
 ## Functions
 
 JS has no main function. Execution goes in 2 steps:
+
 1. The runtime reads all the functions
 2. Execution starts from the first line, ignoring function definitions
 
@@ -144,11 +153,12 @@ function add(x, y) {
 
 Because functions are implemented as objects,
 they can be passed around, like objects:
+
 ```js
 const a = calculate(4, 8, add);
 const b = calculate(4, 8, subtract);
-console.log(a) // 12
-console.log(b) // -4
+console.log(a); // 12
+console.log(b); // -4
 
 function calculate(x, y, operation) {
   return operation(x, y);
@@ -170,6 +180,7 @@ Note that you pass a function by its name and call it by adding brackets.
 ## Control flow
 
 Same as in C:
+
 ```js
 let x = 0;
 
@@ -180,9 +191,9 @@ while (x < 3) {
 
 for (let i = 0; i < 10; i++) {
   if (i % 3 === 0 && i % 5 === 0) {
-    console.log('fizzbuzz');
+    console.log("fizzbuzz");
   } else if (i % 3 === 0) {
-    console.log('fizz');
+    console.log("fizz");
   } else if (i % 5 === 0) {
     console.log("buzz");
   } else {
@@ -196,6 +207,6 @@ Only the equality check is a bit different:
 `===` checks that both the value and the type match:
 
 ```js
-console.log('1' == 1); // true
-console.log('1' === 1); // false
+console.log("1" == 1); // true
+console.log("1" === 1); // false
 ```

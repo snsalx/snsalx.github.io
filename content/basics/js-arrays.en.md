@@ -48,7 +48,7 @@ Let's say we want to get just the names and authors.
 ```js
 function getMainInfo(tracks) {
   const namesAndAuthors = [];
-  
+
   for (let i = 0; i < tracks.length; i++) {
     namesAndAuthors[i] = tracks[i].name + " by " + tracks[i].author;
   }
@@ -67,7 +67,7 @@ Instead, a use of a `map` function is recommended.
 
 ```js
 function map(array, f) {
-  const newData = []
+  const newData = [];
 
   for (let i = 0; i < array.length; i++) {
     newData[i] = f(array[i]);
@@ -84,7 +84,7 @@ function format(track) {
   return track.name + " by " + track.author;
 }
 
-console.log(map(history, format))
+console.log(map(history, format));
 ```
 
 The result is a bit easier to read, but it has another problem: if we need to pass the array
@@ -98,10 +98,10 @@ function format({ name, author }) {
 }
 
 function print(track, index, array) {
-  console.log(track)
+  console.log(track);
 }
 
-history.map(format).map(print)
+history.map(format).map(print);
 ```
 
 The `.map` method also provides the index of the current element.
@@ -118,7 +118,7 @@ Say we want to get all the tracks from Queen.
 ```js
 function fromQueen(tracks) {
   const results = [];
-  
+
   for (let i = 0; i < tracks.length; i++) {
     if (tracks[i].author === "Queen") {
       results.push(tracks[i]);
@@ -132,15 +132,13 @@ console.log(fromQueen(history).map(format));
 ```
 
 The helper method for this is called `.filter` and works in much the same way:
+
 ```js
 function fromQueen(track) {
   return track.author === "Queen";
 }
 
-history
-  .filter(fromQueen)
-  .map(format)
-  .forEach(print);
+history.filter(fromQueen).map(format).forEach(print);
 ```
 
 ## Reduce
@@ -148,12 +146,13 @@ history
 **TODO EXPLAIN CLOSURES**
 
 Sometimes you need something a bit more complex, let's say we want to calculate the total playback time.
+
 ```js
 let totalTime = 0;
 
 history.map((track) => {
   totalTime += track.listenedToSecond;
-})
+});
 
 console.log(totalTime);
 ```
@@ -175,7 +174,11 @@ with an additional variable called `accumulator`. The second argument of the `.r
 is accumulator's initial value. Here we're calculating the sum, so it's zero.
 
 It's commonly written more like this:
+
 ```js
-const totalTime = history.reduce((acc, track) => acc + track.listenedToSecond, 0);
+const totalTime = history.reduce(
+  (acc, track) => acc + track.listenedToSecond,
+  0,
+);
 console.log(totalTime);
 ```
