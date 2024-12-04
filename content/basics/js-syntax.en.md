@@ -1,8 +1,8 @@
-+++
-title = 'JS Syntax'
-date = 2024-11-29T13:16:00Z
-draft = true
-+++
+---
+title: 'JS Syntax'
+date: 2024-11-29T13:16:00Z
+draft: true
+---
 
 ## Variables
 

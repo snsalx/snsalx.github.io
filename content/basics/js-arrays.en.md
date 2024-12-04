@@ -1,15 +1,15 @@
-+++
-title = 'JS Arrays'
-date = 2024-11-29T15:24:08Z
-draft = true
-+++
+---
+title: JS Arrays
+date: 2024-11-29T15:24:08Z
+draft: true
+---
 
 JS implements a few functions for working with arrays. They help make your code more concise and elegant.
 Let's go over them and see how they work.
 
 ## Data
 
-Let's write some test data that we're going to work with here. Imagine we're making an music streaming service.
+Let's write some test data that we're going to work with here. Imagine we're making a music streaming service.
 
 ```js
 const history = [
