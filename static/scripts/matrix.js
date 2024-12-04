@@ -11,17 +11,21 @@ const height = matrix.clientHeight;
 ctx.canvas.width = width;
 ctx.canvas.height = height;
 
-const gap = 1;
+const gap = 4;
 const cellW = width / resolutionHorizontal;
 const cellH = height / resolutionVertical;
 
 function point(x, y, r, g, b) {
-  const xInPx = Math.floor(x) * cellW + gap;
-  const yInPx = Math.floor(y) * cellH + gap;
+  console.log(`Painting pixel ${x}x${y}`)
+
+  const xInPx = x * cellW;
+  const yInPx = y * cellH;
+
+  ctx.fillStyle = `rgb(30, 30, 46)`;
+  ctx.fillRect(xInPx, yInPx, cellW, cellH);
 
   ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-
-  ctx.fillRect(xInPx, yInPx, cellW - gap*2, cellH - gap*2);
+  ctx.fillRect(xInPx + gap, yInPx + gap, cellW - gap*2, cellH - gap*2);
 }
 
 for (let i = 0; i < resolutionVertical; i++) {
@@ -30,20 +34,55 @@ for (let i = 0; i < resolutionVertical; i++) {
   }
 }
 
-// Form handler
+// Color selector
+let color;
+
+const colorInput = document.getElementById("color");
+processColor();
+
+colorInput.addEventListener("change", processColor)
+
 function processColor(hex) {
-  return [
+  if (!hex) {
+    hex = colorInput.value;
+  } else {
+    colorInput.value = hex;
+  }
+
+  color = [
     parseInt(hex.slice(1, 3), 16),
     parseInt(hex.slice(3, 5), 16),
     parseInt(hex.slice(5, 7), 16),
   ]
 }
 
-const colorInput = document.getElementById("color");
-let color = processColor(colorInput.value);
-
-colorInput.addEventListener("change", event => {
-  color = processColor(event.target.value)
+document.addEventListener("keydown", event => {
+  switch(event.key) {
+    case "1":
+      processColor("#ff0000")
+      break;
+    case "2":
+      processColor("#00ff00")
+      break;
+    case "3":
+      processColor("#0000ff")
+      break;
+    case "4":
+      processColor("#ffff00")
+      break;
+    case "5":
+      processColor("#00ffff")
+      break;
+    case "6":
+      processColor("#ff00ff")
+      break;
+    case "9":
+      processColor("#ffffff")
+      break;
+    case "0":
+      processColor("#000000")
+      break;
+  }
 })
 
 // Click handler
@@ -57,5 +96,5 @@ function handleMouse(event) {
   const x = (event.clientX - rect.x) / width * resolutionHorizontal;
   const y = (event.clientY - rect.y) / height * resolutionVertical;
 
-  point(x, y, ...color);
+  point(Math.floor(x), Math.floor(y), ...color);
 }
