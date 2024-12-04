@@ -28,7 +28,6 @@ async function send(text) {
 // Preview
 const matrix = document.getElementById("matrix");
 const ctx = matrix.getContext("2d");
-const rect = matrix.getBoundingClientRect();
 
 const resolutionVertical = 16;
 const resolutionHorizontal = 16;
@@ -110,6 +109,8 @@ document.addEventListener("keydown", (event) => {
 matrix.addEventListener("mousemove", handleMouse);
 matrix.addEventListener("click", handleMouse);
 function handleMouse(event) {
+  const rect = matrix.getBoundingClientRect();
+
   if (!event.buttons && event.type === "mousemove") {
     return;
   }
