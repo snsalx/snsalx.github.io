@@ -17,11 +17,12 @@ async function connect() {
 }
 
 async function send(text) {
+  console.log("Packet: ", text);
+
   if (!connection) {
     return;
   }
 
-  console.log("Sending packet:", text);
   await connection.write(text + "\n");
 }
 
@@ -40,19 +41,6 @@ ctx.canvas.height = height;
 const gap = 4;
 const cellW = width / resolutionHorizontal;
 const cellH = height / resolutionVertical;
-
-// Init
-async function initMatrix() {
-  await connect();
-
-  for (let i = 0; i < resolutionVertical; i++) {
-    for (let j = 0; j < resolutionHorizontal; j++) {
-      point(j, i, 0, 0, 0);
-    }
-  }
-}
-
-initMatrix();
 
 // Color selector
 let color;
@@ -109,7 +97,7 @@ document.addEventListener("keydown", (event) => {
 let lastSentPacket = "";
 
 matrix.addEventListener("mousemove", handleMouse);
-matrix.addEventListener("click", handleMouse);
+matrix.addEventListener("mousedown", handleMouse);
 matrix.addEventListener("mouseup", () => {
   send("00 00 00 00 1"); // repaint command
 });
@@ -138,8 +126,6 @@ function point(x, y, r, g, b) {
 
   lastSentPacket = packet;
 
-  console.log(`Painting pixel ${x}x${y}`);
-
   const xInPx = x * cellW;
   const yInPx = y * cellH;
 
@@ -151,3 +137,22 @@ function point(x, y, r, g, b) {
 
   send(packet.toUpperCase());
 }
+
+// Init
+async function initMatrix() {
+  await connect();
+
+  for (let i = 0; i < resolutionVertical; i++) {
+    for (let j = 0; j < resolutionHorizontal; j++) {
+      point(j, i, 0, 0, 0);
+    }
+  }
+}
+
+const connectButton = document.getElementById("connect");
+
+connectButton.addEventListener("click", async () => {
+  matrix.style.filter = null;
+  connectButton.remove();
+  await initMatrix();
+})
