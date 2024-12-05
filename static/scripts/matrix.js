@@ -63,7 +63,7 @@ processColor();
 colorInput.addEventListener("change", processColor);
 
 function processColor(hex) {
-  if (!hex) {
+  if (!hex || typeof hex !== "string") {
     hex = colorInput.value;
   } else {
     colorInput.value = hex;
