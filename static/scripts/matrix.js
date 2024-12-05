@@ -106,8 +106,14 @@ document.addEventListener("keydown", (event) => {
 });
 
 // Mouse handler
+let lastSentPacket = "";
+
 matrix.addEventListener("mousemove", handleMouse);
 matrix.addEventListener("click", handleMouse);
+matrix.addEventListener("mouseup", () => {
+  send("00 00 00 00 1"); // repaint command
+});
+
 function handleMouse(event) {
   const rect = matrix.getBoundingClientRect();
 
@@ -123,6 +129,15 @@ function handleMouse(event) {
 
 // Drawing logic
 function point(x, y, r, g, b) {
+  const color = [r, g, b].map(color => '00' + color.toString(16)).map(color => color.slice(-2)).join(" ");
+  const packet = x.toString(16)  + y.toString(16) + ' ' + color + ' 0';
+
+  if (packet === lastSentPacket) {
+    return;
+  }
+
+  lastSentPacket = packet;
+
   console.log(`Painting pixel ${x}x${y}`);
 
   const xInPx = x * cellW;
@@ -134,7 +149,5 @@ function point(x, y, r, g, b) {
   ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
   ctx.fillRect(xInPx + gap, yInPx + gap, cellW - gap * 2, cellH - gap * 2);
 
-  const packet = [x, y, r, g, b].join(",");
-
-  send(packet);
+  send(packet.toUpperCase());
 }
