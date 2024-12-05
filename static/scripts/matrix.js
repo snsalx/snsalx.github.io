@@ -10,7 +10,7 @@ async function connect() {
   }
 
   port = await navigator.serial.requestPort();
-  await port.open({ baudRate: 9600 });
+  await port.open({ baudRate: 65535 });
 
   encoder.readable.pipeTo(port.writable);
   connection = encoder.writable.getWriter();
@@ -147,6 +147,8 @@ async function initMatrix() {
       point(j, i, 0, 0, 0);
     }
   }
+
+  send("00 00 00 00 1"); // repaint command
 }
 
 const connectButton = document.getElementById("connect");
