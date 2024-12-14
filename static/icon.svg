@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="128"
+   height="128"
+   viewBox="0 0 33.866667 33.866667"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="icon.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="false"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="5.2258842"
+     inkscape:cx="64.67805"
+     inkscape:cy="77.594525"
+     inkscape:window-width="1431"
+     inkscape:window-height="1076"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     inkscape:export-bgcolor="#ffffff00" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect8"
+       style="fill:#1e1e2e;stroke:none;stroke-width:0.537436"
+       d="M 2.38125 0 C 1.062039 -3.133293e-16 1.4738714e-17 1.062039 0 2.38125 L 0 31.485417 C -3.133293e-16 32.804628 1.062039 33.866667 2.38125 33.866667 L 31.485417 33.866667 C 32.804628 33.866667 33.866667 32.804628 33.866667 31.485417 L 33.866667 4.9500855 L 28.916582 0 L 2.38125 0 z " />
+    <circle
+       style="fill:#cdd6f4;stroke:#11111b;stroke-width:0.529167"
+       id="path1"
+       cx="16.933334"
+       cy="19.591377"
+       r="9.5249996" />
+    <rect
+       style="fill:#cdd6f4;stroke:#11111b;stroke-width:0.434755"
+       id="rect2"
+       width="14.2875"
+       height="6.6145835"
+       x="9.7895832"
+       y="-4.6999444e-16" />
+    <rect
+       style="fill:#89b4fa;stroke:#11111b;stroke-width:0.728395"
+       id="rect3"
+       width="9.5249996"
+       height="4.7624998"
+       x="13.626041"
+       y="0.92604196" />
+    <rect
+       style="fill:#89b4fa;stroke:#11111b;stroke-width:0.529167"
+       id="rect4"
+       width="2.3812499"
+       height="2.3812499"
+       x="23.269762"
+       y="7.3093381"
+       transform="rotate(30)" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.38125px;font-family:'Iosevka Nerd Font';-inkscape-font-specification:'Iosevka Nerd Font';fill:#1e1e2e;stroke:none;stroke-width:0.529167"
+       x="1.9139296"
+       y="31.995205"
+       id="text6"><tspan
+         sodipodi:role="line"
+         id="tspan6"
+         style="font-size:2.38125px;fill:#1e1e2e;stroke-width:0.529167"
+         x="1.9139296"
+         y="31.995205">SnsAlx</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.38125px;font-family:'Iosevka Nerd Font';-inkscape-font-specification:'Iosevka Nerd Font';fill:#313244;stroke:none;stroke-width:0.529167"
+       x="4.6258764"
+       y="37.056854"
+       id="text7"><tspan
+         sodipodi:role="line"
+         id="tspan7"
+         style="font-size:2.38125px;fill:#313244;stroke-width:0.529167"
+         x="4.6258764"
+         y="37.056854">yes, this is a floppy</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.38125px;font-family:'Iosevka Nerd Font';-inkscape-font-specification:'Iosevka Nerd Font';fill:#313244;stroke:none;stroke-width:0.529167"
+       x="0"
+       y="42.066895"
+       id="text8"><tspan
+         sodipodi:role="line"
+         id="tspan8"
+         style="stroke-width:0.529167"
+         x="0"
+         y="42.066895">I oroginally just wrote:</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.529167"
+         x="0"
+         y="45.043457"
+         id="tspan9">  Sns</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.529167"
+         x="0"
+         y="48.02002"
+         id="tspan10">  ---</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.529167"
+         x="0"
+         y="50.996582"
+         id="tspan11">  Alx</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.529167"
+         x="0"
+         y="53.973145"
+         id="tspan12">and it looked kinda like a floppy</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.529167"
+         x="0"
+         y="56.949707"
+         id="tspan13">in the favicon</tspan></text>
+  </g>
+</svg>
