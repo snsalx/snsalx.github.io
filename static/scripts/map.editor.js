@@ -262,14 +262,18 @@ function buildZip() {
           section {
             max-height: 100vh;
             height: 100vh;
+            width: 100vw;
             overflow: hidden;
             background: var(--core);
+            position: absolute;
+            opacity: 0;
           }
 
           .nav {
             padding: var(--gap);
             grid-area: nav;
             background: var(--surface);
+            height: 6rem;
           }
 
           .meta {
@@ -288,6 +292,8 @@ function buildZip() {
             position: relative;
             display: block;
             background-size: contain;
+            max-height: 100%;
+            max-width: 100%;
           }
 
           .layout-horizontal {
@@ -344,6 +350,9 @@ function buildZip() {
               "img";
             grid-template-rows: auto auto 62vh;
           }
+          .layout-auto .gallery {
+            max-height: 62vh;
+          }
           @media (min-aspect-ratio: 12/10) {
             .layout-auto {
               grid-template-areas:
@@ -351,6 +360,9 @@ function buildZip() {
                 "txt img";
               grid-template-rows: auto 1fr;
               grid-template-columns: 1fr 1fr;
+            }
+            .layout-auto .gallery {
+              max-height: 100vh;
             }
           }
 
