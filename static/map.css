@@ -1,17 +1,13 @@
-.point-invisible,
-.point-square,
-.point-round {
+.point {
   position: absolute;
-  background: var(--pico-color);
-  border-radius: var(--pico-border-radius);
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--accent);
+  border-radius: var(--gap);
+  background: color-mix(in hsl, var(--overlay), #ffffff88);
+  color: var(--accent);
+  transition: ease-out 0.3s;
   transform: translate(-50%, -50%);
-}
-.point-round {
-  border-radius: 100%;
-}
-.point-invisible {
-  background: #00000033;
-  border: 1px solid var(--pico-color);
 }
 img {
   width: 100%;
