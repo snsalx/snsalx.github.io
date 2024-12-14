@@ -1,5 +1,7 @@
 function getRef(url) {
-  return decodeURIComponent(url.split('#').at(-1));
+  const [site, ref] = url.split("#");
+
+  return decodeURIComponent(ref);
 }
 
 function getSection(ref) {
