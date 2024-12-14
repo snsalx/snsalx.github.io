@@ -151,236 +151,10 @@ function buildZip() {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light dark" />
-        <link rel="stylesheet" href="/static/theme.css" />
-        <style>
-          :root {
-            --accent: light-dark(#1e66f5, #89b4fa);
-            --success: light-dark(#40a02b, #a6e3a1);
-            --danger: light-dark(#d20f39, #f38ba8);
-            --surface: light-dark(#eff1f5, #1e1e2e);
-            --subsurface: light-dark(#e6e9ef, #181825);
-            --overlay: light-dark(#ccd0da, #313244);
-            --overlay-hover: light-dark(#bcc0cc, #45475a);
-            --core: light-dark(#dce0e8, #11111b);
-            --padding: 0.62rem;
-            --gap: 0.62rem;
-          }
-
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            color: inherit;
-            background: inherit;
-            font-size: inherit;
-            font-family: Iosevka, monospace;
-          }
-          body {
-            background: var(--surface);
-            color: light-dark(#4c4f69, #cdd6f4);
-            font-size: 18px;
-          }
-
-          h1 {
-            padding: var(--padding);
-            font-size: 3rem;
-            color: var(--accent);
-          }
-          h2 {
-            padding: var(--padding);
-            font-size: 2rem;
-            color: var(--accent);
-          }
-          em,
-          b {
-            color: var(--accent);
-          }
-          p {
-            padding: var(--padding);
-          }
-          figure,
-          img {
-            min-width: 0;
-            min-height: 0;
-          }
-          img {
-            object-fit: contain;
-          }
-
-          .button {
-            display: grid;
-            place-items: center;
-            height: 3rem;
-            width: 3rem;
-            border: 2px solid var(--core);
-            border-radius: var(--gap);
-            background: var(--overlay);
-            color: var(--accent);
-            transition: ease-out 0.3s;
-          }
-          .button:hover {
-            background: var(--overlay-hover);
-          }
-
-          .panel-top {
-            background: var(--surface);
-          }
-          .panel-bottom {
-            background: var(--subsurface);
-          }
-
-          .justify {
-            text-align: justify;
-          }
-          .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: var(--gap);
-          }
-          .accent {
-            color: var(--accent);
-          }
-          .success {
-            color: var(--success);
-          }
-          .danger {
-            color: var(--danger);
-          }
-        </style>
-        <style>
-          /* map-layouts.css */
-          body {
-            overflow: hidden;
-          }
-          .button svg {
-            height: 1.62rem;
-            stroke-width: 2px;
-            background: transparent;
-          }
-
-          section {
-            max-height: 100vh;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background: var(--core);
-            position: absolute;
-            opacity: 0;
-          }
-
-          .nav {
-            padding: var(--gap);
-            grid-area: nav;
-            background: var(--surface);
-            height: 6rem;
-          }
-
-          .meta {
-            grid-area: txt;
-            max-height: 100vh;
-            overflow: auto;
-            background: var(--subsurface);
-          }
-
-          .gallery {
-            grid-area: img;
-            background-color: var(--surface);
-          }
-          .map {
-            margin: auto;
-            position: relative;
-            display: block;
-            background-size: contain;
-            max-height: 100%;
-            max-width: 100%;
-          }
-
-          .layout-horizontal {
-            display: grid;
-            gap: var(--gap);
-            grid-template-areas:
-              "nav nav"
-              "txt img";
-            grid-template-rows: auto 1fr;
-            grid-template-columns: 1fr 1fr;
-          }
-          .layout-vertical {
-            display: grid;
-            gap: var(--gap);
-            grid-template-areas:
-              "nav"
-              "txt"
-              "img";
-            grid-template-rows: auto auto 62vh;
-          }
-          .layout-vertical .gallery {
-            max-height: 62vh;
-          }
-          .layout-notext {
-            display: grid;
-            gap: var(--gap);
-            grid-template-areas:
-              "nav"
-              "img";
-            grid-template-rows: auto 1fr;
-          }
-          .layout-notext .gallery {
-            max-height: calc(100vh - 6rem);
-          }
-          .layout-notext .meta {
-            display: none; /* just in case the generator skipped it */
-          }
-          .layout-imageonly {
-            display: grid;
-            grid-template-areas: "img";
-          }
-          .layout-imageonly > .meta {
-            display: none; /* just in case the generator skipped it */
-          }
-          .layout-imageonly > .nav {
-            display: none; /* just in case the generator skipped it */
-          }
-          .layout-auto {
-            display: grid;
-            gap: var(--gap);
-            grid-template-areas:
-              "nav"
-              "txt"
-              "img";
-            grid-template-rows: auto auto 62vh;
-          }
-          .layout-auto .gallery {
-            max-height: 62vh;
-          }
-          @media (min-aspect-ratio: 12/10) {
-            .layout-auto {
-              grid-template-areas:
-                "nav nav"
-                "txt img";
-              grid-template-rows: auto 1fr;
-              grid-template-columns: 1fr 1fr;
-            }
-            .layout-auto .gallery {
-              max-height: 100vh;
-            }
-          }
-
-          .point {
-            position: absolute;
-            display: grid;
-            place-items: center;
-            border: 2px solid var(--accent);
-            border-radius: var(--gap);
-            background: color-mix(in hsl, var(--overlay), light-dark(#ffffff88, #00000088));
-            color: var(--accent);
-            transition: ease-out 0.3s;
-            transform: translate(-50%, -50%);
-          }
-          .point:hover {
-            background: color-mix(in hsl, var(--overlay-hover), #ffffffaa);
-          }
-        </style>
+        <link rel="stylesheet" href="https://snsalx.github.io/common.css" />
+        <link rel="stylesheet" href="https://snsalx.github.io/map.layout.css" />
+        <script src="https://snsalx.github.io/scripts/map.viewer.js">
+        </script>
         <title>Map</title>
         <!-- generated using https://snsalx.github.io/map -->
       </head>
@@ -480,7 +254,7 @@ async function parseZip() {
   });
 }
 
-function generateViewer(section) {
+function generateViewer(section, idx) {
   const viewer = document.createElement("section");
   viewer.classList = ["layout-auto"];
 
@@ -582,6 +356,10 @@ function generateViewer(section) {
     </a>
   `;
   nav.appendChild(buttons);
+
+  if (idx === 0) {
+    viewer.classList.add("visible")
+  }
 
   return viewer;
 }
