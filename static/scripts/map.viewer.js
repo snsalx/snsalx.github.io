@@ -5,7 +5,7 @@ function getRef(url) {
 }
 
 function getSection(ref) {
-  if (!ref) {
+  if (!ref || ref === "undefined") {
     return document.querySelector("section");
   }
 
