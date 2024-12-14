@@ -254,7 +254,7 @@ async function parseZip() {
   });
 }
 
-function generateViewer(section, idx) {
+function generateViewer(section) {
   const viewer = document.createElement("section");
   viewer.classList = ["layout-" + section.meta.elements.layout.value];
 
@@ -354,10 +354,6 @@ function generateViewer(section, idx) {
     </a>
   `;
   nav.appendChild(buttons);
-
-  if (idx === 0) {
-    viewer.classList.add("visible")
-  }
 
   return viewer;
 }

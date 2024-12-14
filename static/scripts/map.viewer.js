@@ -24,3 +24,5 @@ addEventListener("hashchange", ({oldURL, newURL}) => {
   from.classList.remove("visible");
   to.classList.add("visible");
 })
+
+location.href = "#";
