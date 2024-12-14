@@ -26,3 +26,6 @@ addEventListener("hashchange", ({oldURL, newURL}) => {
 })
 
 location.href = "#";
+addEventListener("load", () => {
+  document.querySelector("section").classList.add("visible");
+})
