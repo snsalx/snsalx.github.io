@@ -60,7 +60,7 @@ body {
   grid-template-areas:
     "nav nav"
     "txt img";
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 6rem 1fr;
   grid-template-columns: 1fr 1fr;
 }
 .layout-vertical {
@@ -70,7 +70,7 @@ body {
     "nav"
     "txt"
     "img";
-  grid-template-rows: auto auto 62vh;
+  grid-template-rows: 6rem auto 62vh;
 }
 .layout-vertical .gallery {
   max-height: 62vh;
@@ -81,7 +81,7 @@ body {
   grid-template-areas:
     "nav"
     "img";
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 6rem 1fr;
 }
 .layout-notext .gallery {
   max-height: calc(100vh - 6rem);
@@ -106,7 +106,7 @@ body {
     "nav"
     "txt"
     "img";
-  grid-template-rows: auto auto 62vh;
+  grid-template-rows: 6rem auto 62vh;
 }
 .layout-auto .gallery {
   max-height: 62vh;
@@ -116,7 +116,7 @@ body {
     grid-template-areas:
       "nav nav"
       "txt img";
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 6rem 1fr;
     grid-template-columns: 1fr 1fr;
   }
   .layout-auto .gallery {

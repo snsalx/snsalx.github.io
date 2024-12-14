@@ -211,6 +211,7 @@ async function parseZip() {
     section.fragment.id = title;
     section.meta.description.value = data.meta.description;
     section.meta.source.value = data.meta.source;
+    section.meta.layout.value = data.meta.layout || "auto";
 
     const imageName = data.meta.image;
     if (imageName) {
@@ -257,7 +258,7 @@ async function parseZip() {
 
 function generateViewer(section, idx) {
   const viewer = document.createElement("section");
-  viewer.classList = ["layout-auto"];
+  viewer.classList = ["layout-" + section.meta.elements.layout.value];
 
   const gallery = document.createElement("figure");
   gallery.classList = ["gallery"];
