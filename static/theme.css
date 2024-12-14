@@ -45,7 +45,7 @@
   --pico-h5-color: var(--pico-muted-color) !important;
   --pico-h6-color: var(--pico-muted-color) !important;
 
-  --pico-primary: light-dark(#e64553, #89b4fa) !important;
+  --pico-primary: light-dark(#1e66f5, #89b4fa) !important;
   --pico-primary-underline: var(--pico-primary-color) !important;
   --pico-primary-inverse: var(--pico-background-color) !important;
   --pico-primary-background: var(--pico-primary) !important;
