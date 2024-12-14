@@ -28,15 +28,15 @@
 }
 
 :root {
-  --pico-border-radius: 8px;
-  --pico-font-family: 'Comfortaa', monospace;
+  --pico-border-radius: 9px;
+  --pico-font-family: 'Iosevka', monospace;
   --pico-font-family-monospace: 'Iosevka', monospace;
-  --pico-font-size: 16px;
+  --pico-font-size: 18px;
 
-  --pico-background-color: light-dark(#eff1f5, #24273a) !important;
-  --pico-code-background-color: light-dark(#dce0e8, #181926) !important;
-  --pico-color: light-dark(#4c4f69, #cad3f5) !important;
-  --pico-muted-color: light-dark(#6c6f85, #a5adcb) !important;
+  --pico-background-color: light-dark(#eff1f5, #1e1e2e) !important;
+  --pico-code-background-color: light-dark(#eff1f5, #1e1e2e) !important;
+  --pico-color: light-dark(#4c4f69, #cdd6f4) !important;
+  --pico-muted-color: light-dark(#6c6f85, #bac2de) !important;
 
   --pico-h1-color: var(--pico-color) !important;
   --pico-h2-color: var(--pico-color) !important;
@@ -45,17 +45,17 @@
   --pico-h5-color: var(--pico-muted-color) !important;
   --pico-h6-color: var(--pico-muted-color) !important;
 
-  --pico-primary: light-dark(#e64553, #ee99a0) !important;
+  --pico-primary: light-dark(#e64553, #89b4fa) !important;
   --pico-primary-underline: var(--pico-primary-color) !important;
   --pico-primary-inverse: var(--pico-background-color) !important;
   --pico-primary-background: var(--pico-primary) !important;
-  --pico-secondary-background: light-dark(#ccd0da, #363a4f) !important;
+  --pico-secondary-background: light-dark(#ccd0da, #313244) !important;
   --pico-secondary-inverse: var(--pico-color) !important;
   --pico-contrast-background: var(--pico-color) !important;
 
   --pico-form-element-border-color: transparent !important;
-  --pico-form-element-background-color: light-dark(#e6e9ef, #1e2030) !important;
-  --pico-form-element-active-background-color: light-dark(#e6e9ef, #1e2030) !important;
+  --pico-form-element-background-color: light-dark(#e6e9ef, #181825) !important;
+  --pico-form-element-active-background-color: light-dark(#e6e9ef, #181825) !important;
 
   --pico-primary-hover: var(--pico-primary) !important;
   --pico-primary-focus: var(--pico-primary) !important;
@@ -67,17 +67,77 @@
   --pico-secondary-hover-background: var(--pico-secondary-background) !important;
   --pico-contrast-hover-background: var(--pico-contrast-background) !important;
 
-  --pico-text-selection-color: light-dark(#ee99a0, #e64553) !important;
+  --accent: light-dark(#1e66f5, #89b4fa);
+  --success: light-dark(#40a02b, #a6e3a1);
+  --danger: light-dark(#d20f39, #f38ba8);
+  --surface: light-dark(#eff1f5, #1e1e2e);
+  --subsurface: light-dark(#e6e9ef, #181825);
+  --overlay: light-dark(#ccd0da, #313244);
+  --overlay-hover: light-dark(#bcc0cc, #45475a);
+  --core: light-dark(#dce0e8, #11111b);
+  --padding: 0.62rem;
+  --gap: 0.62rem;
 }
 
 h1 {
-  --pico-font-size: 2rem;
+  font-size: 3rem;
+  color: var(--accent);
 }
 
 h2 {
-  --pico-font-size: 1.5rem;
+  font-size: 2rem;
+  color: var(--accent);
+}
+em,
+b {
+  color: var(--accent);
+}
+figure,
+img {
+  min-width: 0;
+  min-height: 0;
+}
+img {
+  object-fit: contain;
 }
 
-h3 {
-  --pico-font-size: 1.25rem;
+.button {
+  display: grid;
+  place-items: center;
+  height: 3rem;
+  width: 3rem;
+  border: 2px solid var(--core);
+  border-radius: var(--gap);
+  background: var(--overlay);
+  color: var(--accent);
+  transition: ease-out 0.3s;
+}
+.button:hover {
+  background: var(--overlay-hover);
+}
+
+.panel-top {
+  background: var(--surface);
+}
+.panel-bottom {
+  background: var(--subsurface);
+}
+
+.justify {
+  text-align: justify;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gap);
+}
+.accent {
+  color: var(--accent);
+}
+.success {
+  color: var(--success);
+}
+.danger {
+  color: var(--danger);
 }
