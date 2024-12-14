@@ -1,0 +1,140 @@
+
+/* map-layouts.css */
+.button svg {
+  height: 1.62rem;
+  stroke-width: 2px;
+  background: transparent;
+}
+
+section {
+  max-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--core);
+  position: absolute;
+  transition: opacity 0.3s;
+  z-index: -1;
+  opacity: 0;
+}
+
+section.visible {
+  z-index: 1;
+  opacity: 1;
+}
+
+body {
+  position: relative;
+}
+
+.nav {
+  padding: var(--gap);
+  grid-area: nav;
+  background: var(--surface);
+  height: 6rem;
+}
+
+.meta {
+  grid-area: txt;
+  max-height: 100vh;
+  overflow: auto;
+  background: var(--subsurface);
+}
+
+.gallery {
+  grid-area: img;
+  background-color: var(--surface);
+}
+.map {
+  margin: auto;
+  position: relative;
+  display: block;
+  background-size: contain;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.layout-horizontal {
+  display: grid;
+  gap: var(--gap);
+  grid-template-areas:
+    "nav nav"
+    "txt img";
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+.layout-vertical {
+  display: grid;
+  gap: var(--gap);
+  grid-template-areas:
+    "nav"
+    "txt"
+    "img";
+  grid-template-rows: auto auto 62vh;
+}
+.layout-vertical .gallery {
+  max-height: 62vh;
+}
+.layout-notext {
+  display: grid;
+  gap: var(--gap);
+  grid-template-areas:
+    "nav"
+    "img";
+  grid-template-rows: auto 1fr;
+}
+.layout-notext .gallery {
+  max-height: calc(100vh - 6rem);
+}
+.layout-notext .meta {
+  display: none; /* just in case the generator skipped it */
+}
+.layout-imageonly {
+  display: grid;
+  grid-template-areas: "img";
+}
+.layout-imageonly > .meta {
+  display: none; /* just in case the generator skipped it */
+}
+.layout-imageonly > .nav {
+  display: none; /* just in case the generator skipped it */
+}
+.layout-auto {
+  display: grid;
+  gap: var(--gap);
+  grid-template-areas:
+    "nav"
+    "txt"
+    "img";
+  grid-template-rows: auto auto 62vh;
+}
+.layout-auto .gallery {
+  max-height: 62vh;
+}
+@media (min-aspect-ratio: 12/10) {
+  .layout-auto {
+    grid-template-areas:
+      "nav nav"
+      "txt img";
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr 1fr;
+  }
+  .layout-auto .gallery {
+    max-height: 100vh;
+  }
+}
+
+.point {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--accent);
+  border-radius: var(--gap);
+  background: color-mix(in hsl, var(--overlay), #ffffff88);
+  color: var(--accent);
+  transition: ease-out 0.3s;
+  transform: translate(-50%, -50%);
+}
+.point:hover {
+  background: color-mix(in hsl, var(--overlay-hover), #ffffffaa);
+}
