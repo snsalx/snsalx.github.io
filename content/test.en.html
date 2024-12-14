@@ -115,6 +115,19 @@
         width: 100vw;
         overflow: hidden;
         background: var(--core);
+        position: absolute;
+        transition: opacity 0.3s;
+        z-index: -1;
+        opacity: 0;
+      }
+
+      section.visible {
+        z-index: 1;
+        opacity: 1;
+      }
+
+      body {
+        position: relative;
       }
 
       .nav {
@@ -229,11 +242,35 @@
         background: color-mix(in hsl, var(--overlay-hover), #ffffffaa);
       }
     </style>
+    <script>
+      function getRef(url) {
+        return decodeURIComponent(url.split('#').at(-1));
+      }
+
+      function getSection(ref) {
+        const query = ref ? ("section:has(#" + ref + ")") : "section"
+
+        return document.querySelector(query);
+      }
+
+      addEventListener("hashchange", ({oldURL, newURL}) => {
+        const from = getSection(getRef(oldURL));
+        const to = getSection(getRef(newURL));
+
+        if (!to) {
+          history.back();
+          throw new Error("invalid ref: " + getRef(oldURL) + " -> " + getRef(newURL));
+        }
+
+        from.classList.remove("visible");
+        to.classList.add("visible");
+      })
+    </script>
     <title>Map</title>
     <!-- generated using https://snsalx.github.io/map -->
   </head>
   <body>
-    <section class="layout-notext">
+    <section class="layout-notext visible">
       <div class="nav row">
         <h2 id="20 ВЕК">20 ВЕК</h2>
         <div class="row">
@@ -275,7 +312,7 @@
         <div class="map" style="background-image: url('/static/Снимок экрана 2024-11-26 174127.png'); aspect-ratio: 1353 / 753;">
           <a
             class="point"
-            href="#Первая мировая Война"
+            href="#Запорожье"
             style="left: 27.45%; top: 94.582%; width: 64px; height: 64px"
             data-form-id="0c261d0e-5116-4dab-a9d1-a04b95d35ed2"
           ></a
