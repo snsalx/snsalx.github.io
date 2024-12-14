@@ -130,11 +130,11 @@ body {
   place-items: center;
   border: 2px solid var(--accent);
   border-radius: var(--gap);
-  background: color-mix(in hsl, var(--overlay), #ffffff88);
+  background: color-mix(in hsl, var(--overlay), #00000088);
   color: var(--accent);
   transition: ease-out 0.3s;
   transform: translate(-50%, -50%);
 }
 .point:hover {
-  background: color-mix(in hsl, var(--overlay-hover), #ffffffaa);
+  background: color-mix(in hsl, var(--overlay-hover), #000000aa);
 }

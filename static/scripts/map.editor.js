@@ -226,8 +226,6 @@ async function parseZip() {
       updateImage(section);
     }
 
-    data.points.map((pointData) => {});
-
     section.image.onload = () => {
       data.points.map((pointData) => {
         const point = createPoint(section, true);
@@ -331,7 +329,6 @@ function generateViewer(section, idx) {
         viewBox="0 0 24 24"
         stroke-width="3"
         stroke="currentColor"
-        class="size-6"
       >
         <path
           stroke-linecap="round"
@@ -347,7 +344,6 @@ function generateViewer(section, idx) {
         viewBox="0 0 24 24"
         stroke-width="3"
         stroke="currentColor"
-        class="size-6"
       >
         <path
           stroke-linecap="round"
