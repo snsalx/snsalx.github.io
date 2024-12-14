@@ -3,7 +3,7 @@ let sectionTemplate = document.getElementById("section-template").content;
 let pointTemplate = document.getElementById("point-template").content;
 let sections = document.getElementById("section-container");
 let uploadZipButton = document.getElementById("upload-zip");
-let downloadZipButton = document.getElementById("download-zip")
+let downloadZipButton = document.getElementById("download-zip");
 
 document.getElementById("add-section").addEventListener("click", createSection);
 downloadZipButton.addEventListener("click", buildZip);

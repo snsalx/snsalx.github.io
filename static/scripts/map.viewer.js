@@ -12,7 +12,7 @@ function getSection(ref) {
   return document.getElementById(ref).parentElement.parentElement;
 }
 
-addEventListener("hashchange", ({oldURL, newURL}) => {
+addEventListener("hashchange", ({ oldURL, newURL }) => {
   const from = getSection(getRef(oldURL));
   const to = getSection(getRef(newURL));
 
@@ -23,9 +23,9 @@ addEventListener("hashchange", ({oldURL, newURL}) => {
 
   from.classList.remove("visible");
   to.classList.add("visible");
-})
+});
 
 location.href = "#";
 addEventListener("load", () => {
   document.querySelector("section").classList.add("visible");
-})
+});

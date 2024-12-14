@@ -117,8 +117,11 @@ function handleMouse(event) {
 
 // Drawing logic
 function point(x, y, r, g, b) {
-  const color = [r, g, b].map(color => '00' + color.toString(16)).map(color => color.slice(-2)).join(" ");
-  const packet = x.toString(16)  + y.toString(16) + ' ' + color + ' 0';
+  const color = [r, g, b]
+    .map((color) => "00" + color.toString(16))
+    .map((color) => color.slice(-2))
+    .join(" ");
+  const packet = x.toString(16) + y.toString(16) + " " + color + " 0";
 
   if (packet === lastSentPacket) {
     return;
@@ -157,4 +160,4 @@ connectButton.addEventListener("click", async () => {
   matrix.style.filter = null;
   connectButton.remove();
   await initMatrix();
-})
+});
