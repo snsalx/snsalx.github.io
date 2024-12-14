@@ -536,7 +536,7 @@ function generateViewer(section) {
   const buttons = document.createElement("div");
   buttons.classList = ["row"];
   buttons.innerHTML = `
-    <a href="#" class="button">
+    <button href="#" class="button" onclick="history.back()">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -551,7 +551,7 @@ function generateViewer(section) {
           d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
         />
       </svg>
-    </a>
+    </button>
     <a href="#" class="button danger">
       <svg
         xmlns="http://www.w3.org/2000/svg"
