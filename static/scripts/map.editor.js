@@ -3,9 +3,10 @@ let sectionTemplate = document.getElementById("section-template").content;
 let pointTemplate = document.getElementById("point-template").content;
 let sections = document.getElementById("section-container");
 let uploadZipButton = document.getElementById("upload-zip");
+let downloadZipButton = document.getElementById("download-zip")
 
 document.getElementById("add-section").addEventListener("click", createSection);
-document.getElementById("download-zip").addEventListener("click", buildZip);
+downloadZipButton.addEventListener("click", buildZip);
 addEventListener("resize", recalculatePoints);
 uploadZipButton.addEventListener("change", parseZip);
 
@@ -378,6 +379,8 @@ function rerender() {
     option.value = title;
     return option;
   });
+
+  downloadZipButton.style.display = sections.length > 0 ? "block" : "none";
 
   sections
     .flatMap((section) => Array.from(section.points.children))
