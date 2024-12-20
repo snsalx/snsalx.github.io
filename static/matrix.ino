@@ -6,8 +6,6 @@
 #define PACKET_LENGTH 9
 // XY RRG GG BB C where C is the Command
 // example command: 00 00 FF 00 0
-// spaces are required for some reason...
-// ill update the doc when I figure it out
 
 CRGB leds[LEDS_COUNT];
 
@@ -15,11 +13,11 @@ byte buffer[PACKET_LENGTH];
 int input = 0;
 
 byte getPointId(byte x, byte y) {
-  y = 16 - y; // remove in the real one
+  y = 16 - y;
 
   byte idx = 16 * (y - 1);
 
-  idx += (y % 2 != 0) ? x : (15 - x); // flip this in the real one
+  idx += (y % 2 != 0) ? x : (15 - x);
 
   return idx;
 }
@@ -85,5 +83,4 @@ void loop () {
 
     Serial.println("OK");
   }
-  // Serial.println("DONE"); 0000FF000AAAAAAAA1
 }

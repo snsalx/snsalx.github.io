@@ -9,7 +9,11 @@ async function connect() {
     return;
   }
 
-  port = await navigator.serial.requestPort();
+  port = await navigator.serial.requestPort().catch(() => null);
+  if (!port) {
+    return
+  }
+
   await port.open({ baudRate: 65535 });
 
   encoder.readable.pipeTo(port.writable);
@@ -111,6 +115,10 @@ function handleMouse(event) {
 
   const x = ((event.clientX - rect.x) / width) * resolutionHorizontal;
   const y = ((event.clientY - rect.y) / height) * resolutionVertical;
+
+  if (x > 16 || x < 0 || y > 16 || y < 0) {
+    return;
+  }
 
   point(Math.floor(x), Math.floor(y), ...color);
 }
