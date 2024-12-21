@@ -268,7 +268,7 @@ function generateViewer(section) {
   for (const file of section.meta.image.files) {
     src = file.name;
   }
-  map.style.backgroundImage = "url(" + encodeURIComponent(src) + ")";
+  map.style.backgroundImage = "url(\"" + encodeURIComponent(src) + "\")";
   map.style.aspectRatio = `${section.image.naturalWidth} / ${section.image.naturalHeight}`;
   gallery.appendChild(map);
 
