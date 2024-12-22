@@ -40,6 +40,13 @@ function updateImage(section) {
 }
 
 function createPoint(section, empty) {
+  if (!empty) {
+    if (!section.image.src) {
+      alert("Error: No image")
+      return;
+    }
+  }
+
   const point = pointTemplate.cloneNode(true).children[0];
   point.id = crypto.randomUUID();
 
