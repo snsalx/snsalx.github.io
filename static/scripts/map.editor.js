@@ -277,7 +277,19 @@ function generateViewer(section) {
   }
   map.style.backgroundImage = "url(\"" + encodeURIComponent(src) + "\")";
   map.style.aspectRatio = `${section.image.naturalWidth} / ${section.image.naturalHeight}`;
-  gallery.appendChild(map);
+
+  if (section.meta.caption.value) {
+    const caption = document.createElement("p");
+    caption.innerText = section.meta.caption.value;
+
+    gallery.classList.add("gallery-with-caption");
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(map);
+    wrapper.appendChild(caption);
+    gallery.appendChild(wrapper);
+  } else {
+    gallery.appendChild(map);
+  }
 
   Array.from(section.points.children).map((form) =>
     updatePointPreview(
