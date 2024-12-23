@@ -3,8 +3,9 @@ const calibrationButtons = document.getElementById("calibration").elements;
 const inputs = [];
 
 setupCalibration();
+// navigator.mediaDevices.getUserMedia({video: true, audio: false})
 setupCameras();
-frame();
+track();
 
 function setupCalibration() {
   calibrationButtons.tl.addEventListener("click", async () =>
@@ -22,41 +23,11 @@ function setupCalibration() {
     }),
   );
 
-  calibrationButtons.tr.addEventListener("click", async () =>
-    inputs.forEach(async (input) => {
-      const [person] = await trackWrists(input);
-      const [_, wrist] = person;
-      input.calibration.topLeft = [wrist.x, wrist.y];
-
-      input.figure.querySelector(".top-right")?.remove();
-      const corner = document.createElement("div");
-      corner.classList = ["corner top-right"];
-      corner.style.left = wrist.x * 100 + "%";
-      corner.style.top = wrist.y * 100 + "%";
-      input.figure.appendChild(corner);
-    }),
-  );
-
-  calibrationButtons.bl.addEventListener("click", async () =>
-    inputs.forEach(async (input) => {
-      const [person] = await trackWrists(input);
-      const [wrist, _] = person;
-      input.calibration.topLeft = [wrist.x, wrist.y];
-
-      input.figure.querySelector(".bottom-left")?.remove();
-      const corner = document.createElement("div");
-      corner.classList = ["corner bottom-left"];
-      corner.style.left = wrist.x * 100 + "%";
-      corner.style.top = wrist.y * 100 + "%";
-      input.figure.appendChild(corner);
-    }),
-  );
-
   calibrationButtons.br.addEventListener("click", async () =>
     inputs.forEach(async (input) => {
       const [person] = await trackWrists(input);
       const [_, wrist] = person;
-      input.calibration.topLeft = [wrist.x, wrist.y];
+      input.calibration.bottomRight = [wrist.x, wrist.y];
 
       input.figure.querySelector(".bottom-right")?.remove();
       const corner = document.createElement("div");
@@ -73,6 +44,7 @@ async function setupCameras() {
   const cameras = devices.filter((device) => device.kind === "videoinput");
 
   for (const camera of cameras) {
+    console.log('Found a camera')
     const figure = document.createElement("figure");
     figure.style.position = "relative";
 
@@ -89,6 +61,7 @@ async function setupCameras() {
       poseDetection.SupportedModels.MoveNet,
       {
         modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
+        minPoseScore: 0.3,
         enableTracking: true,
         enableSmoothing: true,
       },
@@ -96,14 +69,12 @@ async function setupCameras() {
 
     const calibration = {
       topLeft: [0, 0],
-      topRight: [0, 0],
-      bottomLeft: [0, 1],
       bottomRight: [1, 1],
     };
 
     videoContainer.appendChild(figure);
 
-    inputs.push({ detector, video, figure, calibration });
+    inputs.push({ detector, video, figure, calibration, detections: [] });
   }
 }
 
@@ -131,6 +102,7 @@ async function trackWrists(input) {
   Array.from(input.figure.children)
     .filter((child) => Array.from(child.classList).includes("marker"))
     .forEach((marker) => marker.remove());
+
   for (const person of people) {
     const [leftWrist, rightWrist] = person;
 
@@ -147,10 +119,45 @@ async function trackWrists(input) {
     input.figure.appendChild(markerR);
   }
 
+  input.detections = people.map(([leftWrist, rightWrist]) => {
+    const width = (input.calibration.bottomRight[0] - input.calibration.topLeft[0])
+    const height = (input.calibration.bottomRight[1] - input.calibration.topLeft[1])
+    const lx = (leftWrist.x - input.calibration.topLeft[0]) / width;
+    const ly = (leftWrist.y - input.calibration.topLeft[1]) / height;
+    const rx = (leftWrist.x - input.calibration.topLeft[0]) / width;
+    const ry = (leftWrist.y - input.calibration.topLeft[1]) / height;
+
+    return { leftWrist: {x: lx, y: ly}, rightWrist: {x: rx, y: ry}}
+  });
+
   return people;
 }
 
-async function frame() {
+let lastDistLeftWrist = 0;
+let threshold = 0.04;
+
+async function track() {
   inputs.map(trackWrists);
-  setTimeout(frame, 30);
+
+  setTimeout(track, 10);
+
+  if (inputs.length != 2) {
+    return
+  }
+
+  const [camA, camB] = inputs;
+ 
+  if (camA.detections[0]?.leftWrist && camB.detections[0]?.leftWrist) {
+    const distLeftWrist = Math.sqrt(
+      (camA.detections[0].leftWrist.x - camB.detections[0].leftWrist.x) ** 2 +
+      (camA.detections[0].leftWrist.y - camB.detections[0].leftWrist.y) ** 2
+    );
+
+    if (distLeftWrist < threshold && lastDistLeftWrist < threshold) {
+      console.log('held')
+    }
+    if (distLeftWrist < threshold) {
+      lastDistLeftWrist = distLeftWrist;
+    }
+  }
 }
