@@ -44,6 +44,10 @@ body {
   grid-area: img;
   background-color: var(--surface);
 }
+.gallery-with-caption {
+  display: grid;
+  grid-template-rows: calc(100% - 3rem) 3rem;
+}
 .map {
   margin: auto;
   position: relative;
