@@ -4,13 +4,34 @@ let pointTemplate = document.getElementById("point-template").content;
 let sections = document.getElementById("section-container");
 let uploadZipButton = document.getElementById("upload-zip");
 let downloadZipButton = document.getElementById("download-zip");
+const paramString = window.location.search.substring(1);
+const queryParams = new URLSearchParams(paramString);
+
+let handleSave = buildZip;
 
 document.getElementById("add-section").addEventListener("click", createSection);
-downloadZipButton.addEventListener("click", buildZip);
+downloadZipButton.addEventListener("click", handleSave);
 addEventListener("resize", recalculatePoints);
 uploadZipButton.addEventListener("change", parseZip);
 
+initDynamic();
+
 // Functions
+async function initDynamic() {
+  if (queryParams.get("dynamic") !== "true") {
+    return
+  }
+
+  const pb = new PocketBase("http://127.0.0.1:8090");
+  const id = queryParams.get("id");
+
+  const maps = await pb.collection('maps').getOne(id);
+  const sections = await pb.collection('sections').getFullList({ filter: `map='${id}'` });
+  const images = sections.map(section => pb.files.getUrl(section, section.map))
+
+  overwriteSections({sections: sections.map(sectionFromBackend), version: "2.0"});
+}
+
 function createSection() {
   const fragment = sectionTemplate.cloneNode(true).children[0];
   const section = parseSection(fragment);
@@ -210,6 +231,10 @@ async function parseZip() {
       }),
   );
 
+  overwriteSections(json, images);
+}
+
+async function overwriteSections(json, images) {
   json.sections.map((data) => {
     const section = createSection();
 
@@ -220,17 +245,19 @@ async function parseZip() {
     section.meta.source.value = data.meta.source;
     section.meta.layout.value = data.meta.layout || "auto";
 
-    const imageName = data.meta.image;
-    if (imageName) {
-      const imageData = images.find((image) => image.name === imageName);
-      const file = new File([imageData.data], imageName);
-      const list = new DataTransfer();
-      list.items.add(file);
-      section.meta.image.files = list.files;
-      if (json.version === "1") {
-        section.image.style.width = "auto"; // to let it apply the scaling later
+    if (images) {
+      const imageName = data.meta.image;
+      if (imageName) {
+        const imageData = images.find((image) => image.name === imageName);
+        const file = new File([imageData.data], imageName);
+        const list = new DataTransfer();
+        list.items.add(file);
+        section.meta.image.files = list.files;
+        if (json.version === "1") {
+          section.image.style.width = "auto"; // to let it apply the scaling later
+        }
+        updateImage(section);
       }
-      updateImage(section);
     }
 
     section.image.onload = () => {
@@ -421,3 +448,18 @@ function parseSection(domSection) {
     fragment: domSection,
   };
 }
+
+function sectionFromBackend(data) {
+  return {
+    meta: {
+      title: data.title,
+      description: data.description,
+      source: data.source,
+      layout: data.layout,
+      image: data.image,
+      caption: data.caption,
+    },
+    points: data.points,
+  }
+}
+

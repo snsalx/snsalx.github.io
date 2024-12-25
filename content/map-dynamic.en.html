@@ -1,0 +1,33 @@
+<div id="root">Loading...</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.20.0/pocketbase.umd.min.js"></script>
+<script>
+  const pb = new PocketBase("http://127.0.0.1:8090");
+  const ui = document.getElementById("root");
+
+  async function main() {
+    const maps = await pb.collection('maps').getFullList();
+    ui.innerHTML = "";
+    showMapsList(maps)
+
+    const sections = await pb.collection('sections').getFullList({ sort: 'map' });
+  }
+
+  function showMapsList(maps) {
+    const list = document.createElement("ul");
+    ui.appendChild(list);
+
+    for (const map of maps) {
+      const li = document.createElement("li");
+      const link = document.createElement("a");
+
+      link.textContent = map.title;
+      link.href = "/map?dynamic=true&id=" + map.id;
+
+      li.appendChild(link);
+      list.appendChild(li);
+    }
+  }
+
+  main();
+</script>
