@@ -8,6 +8,7 @@ const paramString = window.location.search.substring(1);
 const queryParams = new URLSearchParams(paramString);
 
 let handleSave = buildZip;
+let pb = null; // backend
 
 document.getElementById("add-section").addEventListener("click", createSection);
 downloadZipButton.addEventListener("click", handleSave);
@@ -22,12 +23,11 @@ async function initDynamic() {
     return
   }
 
-  const pb = new PocketBase("http://127.0.0.1:8090");
+  pb = new PocketBase("http://127.0.0.1:8090");
   const id = queryParams.get("id");
 
   const maps = await pb.collection('maps').getOne(id);
   const sections = await pb.collection('sections').getFullList({ filter: `map='${id}'` });
-  const images = sections.map(section => pb.files.getUrl(section, section.map))
 
   overwriteSections({sections: sections.map(sectionFromBackend), version: "2.0"});
 }
@@ -54,7 +54,7 @@ function createSection() {
   return section;
 }
 
-function updateImage(section) {
+function updateImageFromFile(section) {
   for (const file of section.meta.image.files) {
     section.image.src = URL.createObjectURL(file);
   }
@@ -258,6 +258,9 @@ async function overwriteSections(json, images) {
         }
         updateImage(section);
       }
+    } else {
+      const image = pb.files.getUrl(data.backendSection, data.meta.image);
+      section.image.src = image;
     }
 
     section.image.onload = () => {
@@ -460,6 +463,8 @@ function sectionFromBackend(data) {
       caption: data.caption,
     },
     points: data.points,
+
+    backendSection: data,
   }
 }
 
