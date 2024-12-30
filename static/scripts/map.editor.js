@@ -44,7 +44,7 @@ function createSection() {
     fragment.remove();
     rerender();
   });
-  section.meta.image.addEventListener("change", () => updateImage(section));
+  section.meta.image.addEventListener("change", () => updateImageFromFile(section));
   section.addPoint.addEventListener("click", () => createPoint(section));
   section.meta.addEventListener("submit", () => event.preventDefault());
 
@@ -256,7 +256,7 @@ async function overwriteSections(json, images) {
         if (json.version === "1") {
           section.image.style.width = "auto"; // to let it apply the scaling later
         }
-        updateImage(section);
+        updateImageFromFile(section);
       }
     } else {
       const image = pb.files.getUrl(data.backendSection, data.meta.image);
