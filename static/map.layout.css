@@ -48,6 +48,9 @@ body {
   display: grid;
   grid-template-rows: calc(100% - 3rem) 3rem;
 }
+.gallery-with-caption p {
+  font-size: 0.75rem;
+}
 .map {
   margin: auto;
   position: relative;
