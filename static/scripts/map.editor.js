@@ -243,6 +243,7 @@ async function overwriteSections(json, images) {
     section.fragment.id = title;
     section.meta.description.value = data.meta.description;
     section.meta.source.value = data.meta.source;
+    section.meta.caption.value = data.meta.caption;
     section.meta.layout.value = data.meta.layout || "auto";
 
     if (images) {
