@@ -1,40 +1,45 @@
-const videoContainer = document.getElementById("video-container");
+const previewsSection = document.getElementById("video-container");
 const calibrationButtons = document.getElementById("calibration").elements;
 const status = document.getElementById("status");
-const inputs = [];
-let lastTimer;
+let camA;
+let camB;
 
-init().catch(die)
+init().catch(notifyErr)
 
 async function init() {
+  notify("initializing the UI")
   setupCalibrationButtons();
-  status.textContent = "asking for permissions"
-  await navigator.mediaDevices.getUserMedia({video: true, audio: false})
-  status.textContent = "loading camera feeds"
-  await setupCameras();
-  status.textContent = "tracking";
-  status.style.background = "var(--pico-primary)";
 
-  await track();
+  notify("asking for permissions")
+  await navigator.mediaDevices.getUserMedia({video: true, audio: false})
+
+  notify("loading camera feeds")
+  await setupCameras();
+
+  notifyOk("tracking")
+
+  while (true) {
+    await trackActions();
+    await new Promise(r => setTimeout(r, 50))
+  }
 }
 
 async function setupCameras() {
   const devices = await navigator.mediaDevices.enumerateDevices();
-  const cameras = devices.filter((device) => device.kind === "videoinput");
+  const videoInputs = devices.filter((device) => device.kind === "videoinput");
 
-  for (const camera of cameras) {
-    console.log('Found a camera')
-    const figure = document.createElement("figure");
-    figure.style.position = "relative";
+  const cameras = await Promise.all(videoInputs.map(async cam => {
+    const preview = document.createElement("figure");
+    preview.style.position = "relative";
 
-    const video = document.createElement("video");
+    const feed = document.createElement("video");
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: camera.deviceId } },
+      video: { deviceId: { exact: cam.deviceId } },
       audio: false,
     });
-    video.srcObject = stream;
-    video.play();
-    figure.appendChild(video);
+    feed.srcObject = stream;
+    feed.play();
+    preview.appendChild(feed);
 
     const detector = await poseDetection.createDetector(
       poseDetection.SupportedModels.MoveNet,
@@ -51,16 +56,30 @@ async function setupCameras() {
       bottomRight: [1, 1],
     };
 
-    videoContainer.appendChild(figure);
+    previewsSection.appendChild(preview);
 
-    inputs.push({ detector, video, figure, calibration, detections: [] });
+    return { detector, feed, preview, calibration };
+  }))
+
+  if (cameras.length === 0) {
+    throw new Error("both cameras missing")
   }
+
+  if (cameras.length === 1) {
+    throw new Error("second camera missing")
+  }
+
+  if (cameras.length > 2) {
+    throw new Error("too many cameras")
+  }
+
+  [camA, camB] = cameras;
 }
 
-async function trackWrists(input) {
-  const poses = await input.detector.estimatePoses(input.video);
-  const width = input.video.videoWidth;
-  const height = input.video.videoHeight;
+async function trackWristsInPx(cam) {
+  const poses = await cam.detector.estimatePoses(cam.feed);
+  const width = cam.feed.videoWidth;
+  const height = cam.feed.videoHeight;
 
   const people = poses
     .map((person) => person.keypoints)
@@ -78,7 +97,12 @@ async function trackWrists(input) {
       return inPercent;
     });
 
-  Array.from(input.figure.children)
+  return people
+}
+
+async function trackWrists(cam) {
+  const people = await trackWristsInPx(cam);
+  Array.from(cam.preview.children)
     .filter((child) => Array.from(child.classList).includes("marker"))
     .forEach((marker) => marker.remove());
 
@@ -94,90 +118,89 @@ async function trackWrists(input) {
     markerR.classList = ["marker right"];
     markerR.style.left = rightWrist.x * 100 + "%";
     markerR.style.top = rightWrist.y * 100 + "%";
-    input.figure.appendChild(markerL);
-    input.figure.appendChild(markerR);
+    cam.preview.appendChild(markerL);
+    cam.preview.appendChild(markerR);
   }
 
-  input.detections = people.map(([leftWrist, rightWrist]) => {
-    const width = (input.calibration.bottomRight[0] - input.calibration.topLeft[0])
-    const height = (input.calibration.bottomRight[1] - input.calibration.topLeft[1])
-    const lx = (leftWrist.x - input.calibration.topLeft[0]) / width;
-    const ly = (leftWrist.y - input.calibration.topLeft[1]) / height;
-    const rx = (leftWrist.x - input.calibration.topLeft[0]) / width;
-    const ry = (leftWrist.y - input.calibration.topLeft[1]) / height;
+  return people.map(([leftWrist, rightWrist]) => {
+    const width = (cam.calibration.bottomRight[0] - cam.calibration.topLeft[0])
+    const height = (cam.calibration.bottomRight[1] - cam.calibration.topLeft[1])
+    const lx = (leftWrist.x - cam.calibration.topLeft[0]) / width;
+    const ly = (leftWrist.y - cam.calibration.topLeft[1]) / height;
+    const rx = (leftWrist.x - cam.calibration.topLeft[0]) / width;
+    const ry = (leftWrist.y - cam.calibration.topLeft[1]) / height;
 
-    return { leftWrist: {x: lx, y: ly}, rightWrist: {x: rx, y: ry}}
+    return { left: {x: lx, y: ly}, right: {x: rx, y: ry}}
   });
-
-  return people;
 }
 
 let lastDistLeftWrist = 0;
 let threshold = 0.04;
 
-async function track() {
-  inputs.map(trackWrists);
+async function trackActions() {
+  const [camAData, camBData] = await Promise.all([camA, camB].map(trackWrists));
 
-  lastTimer = setTimeout(track, 10);
-
-  if (inputs.length != 2) {
-    throw new Error("wrong number of cameras")
-    return
+  const camAPoints = camAData.flatMap(detectionToArray);
+  const camBPoints = camBData.flatMap(detectionToArray);
+  function detectionToArray({left, right}) {
+    return [left, right]
   }
 
-  const [camA, camB] = inputs;
- 
-  if (camA.detections[0]?.leftWrist && camB.detections[0]?.leftWrist) {
-    const distLeftWrist = Math.sqrt(
-      (camA.detections[0].leftWrist.x - camB.detections[0].leftWrist.x) ** 2 +
-      (camA.detections[0].leftWrist.y - camB.detections[0].leftWrist.y) ** 2
-    );
-
-    if (distLeftWrist < threshold && lastDistLeftWrist < threshold) {
-      console.log('held')
-    }
-    if (distLeftWrist < threshold) {
-      lastDistLeftWrist = distLeftWrist;
-    }
+  const distances = camAPoints.flatMap(aPoint => (camBPoints.map(bPoint => dist(aPoint, bPoint))))
+  function dist(aPoint, bPoint) {
+    const dx = aPoint.x - bPoint.x
+    const dy = aPoint.y - bPoint.y
+    return Math.sqrt(dx**2 + dy**2)
   }
+
+  notifyOk(Math.min(...distances));
 }
 
 function setupCalibrationButtons() {
-  status.textContent = "initializing the UI"
   calibrationButtons.tl.addEventListener("click", async () =>
-    inputs.forEach(async (input) => {
-      const [person] = await trackWrists(input);
-      const [wrist, _] = person;
-      input.calibration.topLeft = [wrist.x, wrist.y];
+    [camA, camB].forEach(async (cam) => {
+      const [[left, _]] = await trackWristsInPx(cam)
+      cam.calibration.topLeft = [left.x, left.y];
 
-      input.figure.querySelector(".top-left")?.remove();
+      cam.preview.querySelector(".top-left")?.remove();
       const corner = document.createElement("div");
       corner.classList = ["corner top-left"];
-      corner.style.left = wrist.x * 100 + "%";
-      corner.style.top = wrist.y * 100 + "%";
-      input.figure.appendChild(corner);
+      corner.style.left = left.x * 100 + "%";
+      corner.style.top = left.y * 100 + "%";
+      cam.preview.appendChild(corner);
     }),
   );
 
   calibrationButtons.br.addEventListener("click", async () =>
-    inputs.forEach(async (input) => {
-      const [person] = await trackWrists(input);
-      const [_, wrist] = person;
-      input.calibration.bottomRight = [wrist.x, wrist.y];
+    [camA, camB].forEach(async (cam) => {
+      const [[_, right]] = await trackWristsInPx(cam)
+      cam.calibration.bottomRight = [right.x, right.y];
 
-      input.figure.querySelector(".bottom-right")?.remove();
+      cam.preview.querySelector(".bottom-right")?.remove();
       const corner = document.createElement("div");
       corner.classList = ["corner bottom-right"];
-      corner.style.left = wrist.x * 100 + "%";
-      corner.style.top = wrist.y * 100 + "%";
-      input.figure.appendChild(corner);
+      corner.style.left= right.x * 100 + "%";
+      corner.style.top = right.y * 100 + "%";
+      cam.preview.appendChild(corner);
     }),
   );
 }
 
-
-function die() {
-  clearTimeout(lastTimer)
-  status.textContent = "ERROR: at least one camera missing"
-  status.style.background = "light-dark(#d20f39, #f38ba8)";
+function notifyOk(message) {
+  status.textContent = message
+  status.style.background = "var(--pico-primary)";
+  console.log(message)
 }
+
+function notify(message) {
+  status.textContent = message
+  status.style.background = null;
+  console.log(message)
+}
+
+function notifyErr(message) {
+  status.textContent = message
+  status.style.background = "light-dark(#d20f39, #f38ba8)";
+  console.error(message)
+}
+
