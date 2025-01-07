@@ -1,3 +1,7 @@
-public/
-content/.obsidian
-content/.stfolder
+/public/
+/content/.obsidian
+/content/.stfolder
+/content/Excalidraw
+/content/*.svg
+/.direnv/
+pb_data
