@@ -1,42 +1,21 @@
 const videoContainer = document.getElementById("video-container");
 const calibrationButtons = document.getElementById("calibration").elements;
+const status = document.getElementById("status");
 const inputs = [];
+let lastTimer;
 
-setupCalibration();
-// navigator.mediaDevices.getUserMedia({video: true, audio: false})
-setupCameras();
-track();
+init().catch(die)
 
-function setupCalibration() {
-  calibrationButtons.tl.addEventListener("click", async () =>
-    inputs.forEach(async (input) => {
-      const [person] = await trackWrists(input);
-      const [wrist, _] = person;
-      input.calibration.topLeft = [wrist.x, wrist.y];
+async function init() {
+  setupCalibrationButtons();
+  status.textContent = "asking for permissions"
+  await navigator.mediaDevices.getUserMedia({video: true, audio: false})
+  status.textContent = "loading camera feeds"
+  await setupCameras();
+  status.textContent = "tracking";
+  status.style.background = "var(--pico-primary)";
 
-      input.figure.querySelector(".top-left")?.remove();
-      const corner = document.createElement("div");
-      corner.classList = ["corner top-left"];
-      corner.style.left = wrist.x * 100 + "%";
-      corner.style.top = wrist.y * 100 + "%";
-      input.figure.appendChild(corner);
-    }),
-  );
-
-  calibrationButtons.br.addEventListener("click", async () =>
-    inputs.forEach(async (input) => {
-      const [person] = await trackWrists(input);
-      const [_, wrist] = person;
-      input.calibration.bottomRight = [wrist.x, wrist.y];
-
-      input.figure.querySelector(".bottom-right")?.remove();
-      const corner = document.createElement("div");
-      corner.classList = ["corner bottom-right"];
-      corner.style.left = wrist.x * 100 + "%";
-      corner.style.top = wrist.y * 100 + "%";
-      input.figure.appendChild(corner);
-    }),
-  );
+  await track();
 }
 
 async function setupCameras() {
@@ -139,9 +118,10 @@ let threshold = 0.04;
 async function track() {
   inputs.map(trackWrists);
 
-  setTimeout(track, 10);
+  lastTimer = setTimeout(track, 10);
 
   if (inputs.length != 2) {
+    throw new Error("wrong number of cameras")
     return
   }
 
@@ -160,4 +140,44 @@ async function track() {
       lastDistLeftWrist = distLeftWrist;
     }
   }
+}
+
+function setupCalibrationButtons() {
+  status.textContent = "initializing the UI"
+  calibrationButtons.tl.addEventListener("click", async () =>
+    inputs.forEach(async (input) => {
+      const [person] = await trackWrists(input);
+      const [wrist, _] = person;
+      input.calibration.topLeft = [wrist.x, wrist.y];
+
+      input.figure.querySelector(".top-left")?.remove();
+      const corner = document.createElement("div");
+      corner.classList = ["corner top-left"];
+      corner.style.left = wrist.x * 100 + "%";
+      corner.style.top = wrist.y * 100 + "%";
+      input.figure.appendChild(corner);
+    }),
+  );
+
+  calibrationButtons.br.addEventListener("click", async () =>
+    inputs.forEach(async (input) => {
+      const [person] = await trackWrists(input);
+      const [_, wrist] = person;
+      input.calibration.bottomRight = [wrist.x, wrist.y];
+
+      input.figure.querySelector(".bottom-right")?.remove();
+      const corner = document.createElement("div");
+      corner.classList = ["corner bottom-right"];
+      corner.style.left = wrist.x * 100 + "%";
+      corner.style.top = wrist.y * 100 + "%";
+      input.figure.appendChild(corner);
+    }),
+  );
+}
+
+
+function die() {
+  clearTimeout(lastTimer)
+  status.textContent = "ERROR: at least one camera missing"
+  status.style.background = "light-dark(#d20f39, #f38ba8)";
 }

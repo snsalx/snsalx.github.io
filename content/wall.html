@@ -21,10 +21,28 @@
   .right {
     background: #3c71f7; /* blue */
   }
+
+  #status {
+    border-radius: 2em;
+    background: light-dark(#fe640b, #fab387);
+    padding: 0.5em 1em;
+    color: var(--pico-background-color);
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
 </style>
 
 <section>
-  <h2>Wall</h2>
+  <div class="heading">
+    <h2>Wall</h2>
+    <p id="status">loading the code</p>
+  </div>
   <p>Turns any wall into a touchscreen</p>
   <p>Requirements</p>
   <ul>

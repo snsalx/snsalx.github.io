@@ -12,6 +12,7 @@
           nodePackages.typescript-language-server
           hugo
           pocketbase
+          (pkgs.writeShellScriptBin "run" "hugo server -D")
         ];
       };
     }
