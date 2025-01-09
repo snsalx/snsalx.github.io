@@ -21,10 +21,32 @@
   .right {
     background: #3c71f7; /* blue */
   }
+
+  #status {
+    border-radius: 2em;
+    background: light-dark(#fe640b, #fab387);
+    padding: 0.5em 1em;
+    color: var(--pico-background-color);
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  canvas {
+    border-radius: var(--pico-border-radius);
+  }
 </style>
 
 <section>
-  <h2>Wall</h2>
+  <div class="heading">
+    <h2>Wall</h2>
+    <p id="status">loading the code</p>
+  </div>
   <p>Turns any wall into a touchscreen</p>
   <p>Requirements</p>
   <ul>
@@ -36,27 +58,39 @@
   <h3>Calibration</h3>
   <p>
     <b><em>Warning:</em></b>
-    <span
-      >There must only be one person in frame during the calibration
-      sequence</span
-    >
+    <span>
+      There must only be one person in frame during the calibration
+      sequence
+    </span>
   </p>
   <form id="calibration">
+    <div class="grid">
       <input name="tl" type="button" value="left hand is top left" />
+      <input name="tr" type="button" value="right hand is top right" />
+    </div>
+    <div class="grid">
+      <input name="bl" type="button" value="left hand is bottom left" />
       <input name="br" type="button" value="right hand is bottom right" />
+    </div>
+    <input name="in" type="button" value="closest hand is touching the wall" />
+    <input name="out" type="button" value="closest hand is not touching the wall" />
   </form>
+</section>
+<section>
+  <h3>Coordinate grid</h3>
+  <div class="grid">
+    <canvas id="grid-a"></canvas>
+    <canvas id="grid-b"></canvas>
+  </div>
 </section>
 <section>
   <h3>Camera feeds</h3>
   <div id="video-container"></div>
-</section>
-<section>
-  <h3>Coordinate grid</h3>
-  <p>TODO</p>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@14.0.1/lib/browser/math.min.js"></script>
 <script src="/scripts/wall.js"></script>
