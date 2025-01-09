@@ -7,6 +7,7 @@ const gridBElement = document.getElementById("grid-b");
 const gridB = gridBElement.getContext("2d");
 let camA;
 let camB;
+let touch = null;
 let touchDist = 0;
 let releaseDist = 0;
 let lastDist = Infinity;
@@ -93,17 +94,18 @@ async function setupCameras() {
     setTimeout(() => {
       ctx.canvas.width = element.clientWidth;
       ctx.canvas.height = element.clientHeight;
+      ctx.lineWidth = 4;
       gridClear(ctx);
     }, 10)
   }
 }
 
-async function trackWristsInPx(cam) {
+async function trackWrists(cam) {
   const poses = await cam.detector.estimatePoses(cam.feed);
   const width = cam.feed.videoWidth;
   const height = cam.feed.videoHeight;
 
-  const people = poses
+  return poses
     .map((person) => person.keypoints)
     .map((kp) => [
       kp.find((point) => point.name === "left_wrist"),
@@ -118,70 +120,44 @@ async function trackWristsInPx(cam) {
 
       return inPercent;
     });
-
-  return people
-}
-
-async function trackWrists(cam) {
-  const people = await trackWristsInPx(cam);
-  Array.from(cam.preview.children)
-    .filter((child) => Array.from(child.classList).includes("marker"))
-    .forEach((marker) => marker.remove());
-
-  people.map(person => {
-    const [leftWrist, rightWrist] = person;
-
-    const markerL = document.createElement("div");
-    markerL.classList = ["marker left"];
-    markerL.style.left = leftWrist.x * 100 + "%";
-    markerL.style.top = leftWrist.y * 100 + "%";
-
-    const markerR = document.createElement("div");
-    markerR.classList = ["marker right"];
-    markerR.style.left = rightWrist.x * 100 + "%";
-    markerR.style.top = rightWrist.y * 100 + "%";
-    cam.preview.appendChild(markerL);
-    cam.preview.appendChild(markerR);
-  })
-
-  return people.map(([leftWrist, rightWrist]) => {
-    const width = (cam.calibration.bottomRight[0] - cam.calibration.topLeft[0])
-    const height = (cam.calibration.bottomRight[1] - cam.calibration.topLeft[1])
-    const lx = (leftWrist.x - cam.calibration.topLeft[0]) / width;
-    const ly = (leftWrist.y - cam.calibration.topLeft[1]) / height;
-    const rx = (rightWrist.x - cam.calibration.topLeft[0]) / width;
-    const ry = (rightWrist.y - cam.calibration.topLeft[1]) / height;
-
-    return { left: {x: lx, y: ly}, right: {x: rx, y: ry}}
-  }).filter(i => (
-      i.left.x >= 0 &&
-      i.left.y <= 100 &&
-      i.right.x >= 0 &&
-      i.right.y <= 100
-    ));
 }
 
 async function trackMinDist() {
+  touch = null;
+
   const [camAData, camBData] = await Promise.all([camA, camB].map(trackWrists));
+  const camAPoints = camAData.flat();
+  const camBPoints = camBData.flat();
 
-  const camAPoints = camAData.flatMap(detectionToArray);
-  const camBPoints = camBData.flatMap(detectionToArray);
-  function detectionToArray({left, right}) {
-    return [left, right]
-  }
+  let minDist = 0;
 
-  const distances = camAPoints.flatMap(aPoint => (camBPoints.map(bPoint => dist(aPoint, bPoint))))
+  const distances = camAPoints.forEach(aPoint => (camBPoints.forEach(bPoint => dist(aPoint, bPoint))))
   function dist(aPoint, bPoint) {
     const dx = aPoint.x - bPoint.x
     const dy = aPoint.y - bPoint.y
-    return Math.sqrt(dx**2 + dy**2)
+    const dist = Math.sqrt(dx**2 + dy**2)
+
+    if (!minDist || dist < minDist) {
+      minDist = dist;
+      touch = [aPoint.x, aPoint.y];
+    }
   }
 
-  return Math.min(...distances);
+  return minDist;
 }
 
 async function trackActions() {
   const minDist = await trackMinDist();
+
+  notifyOk(JSON.stringify({touch, minDist}))
+
+  try {
+    splitScreen(camA.calibration, gridA);
+  } catch {
+    console.log('please calibrate')
+    return
+  }
+  return 
 
   if (minDist < touchDist && lastDist < touchDist) {
     notifyOk("click registered")
@@ -196,8 +172,8 @@ async function trackActions() {
 
 function setupCalibrationButtons() {
   calibrationButtons.tl.addEventListener("click", async () => {
-    let [[leftA, rightA]] = await trackWristsInPx(camA)
-    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    let [[leftA, rightA]] = await trackWrists(camA)
+    let [[leftB, rightB]] = await trackWrists(camB)
     camA.calibration.topLeft = [leftA.x, leftA.y];
     camB.calibration.topLeft = [leftB.x, leftB.y];
     gridDrawScreen(camA.calibration, gridA);
@@ -205,8 +181,8 @@ function setupCalibrationButtons() {
   });
 
   calibrationButtons.tr.addEventListener("click", async () => {
-    let [[leftA, rightA]] = await trackWristsInPx(camA)
-    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    let [[leftA, rightA]] = await trackWrists(camA)
+    let [[leftB, rightB]] = await trackWrists(camB)
     camA.calibration.topRight = [rightA.x, rightA.y];
     camB.calibration.topRight = [rightB.x, rightB.y];
     gridDrawScreen(camA.calibration, gridA);
@@ -214,8 +190,8 @@ function setupCalibrationButtons() {
   });
 
   calibrationButtons.bl.addEventListener("click", async () => {
-    let [[leftA, rightA]] = await trackWristsInPx(camA)
-    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    let [[leftA, rightA]] = await trackWrists(camA)
+    let [[leftB, rightB]] = await trackWrists(camB)
     camA.calibration.bottomLeft = [leftA.x, leftA.y];
     camB.calibration.bottomLeft = [leftB.x, leftB.y];
     gridDrawScreen(camA.calibration, gridA);
@@ -223,8 +199,8 @@ function setupCalibrationButtons() {
   });
 
   calibrationButtons.br.addEventListener("click", async () => {
-    let [[leftA, rightA]] = await trackWristsInPx(camA)
-    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    let [[leftA, rightA]] = await trackWrists(camA)
+    let [[leftB, rightB]] = await trackWrists(camB)
     camA.calibration.bottomRight = [rightA.x, rightA.y];
     camB.calibration.bottomRight = [rightB.x, rightB.y];
     gridDrawScreen(camA.calibration, gridA);
@@ -259,16 +235,16 @@ function notifyErr(message) {
 }
 
 function gridClear(ctx) {
-  ctx.fillStyle = "#eff1f5";
+  ctx.fillStyle = "#000";
   ctx.strokeStyle = "transparent";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
   gridColorDefault(ctx);
 }
 function gridColorDefault(ctx) {
-  ctx.strokeStyle = "#4c4f69";
+  ctx.strokeStyle = "#fff";
 }
 function gridColorAccent(ctx) {
-  ctx.strokeStyle = "#1e66f5";
+  ctx.strokeStyle = "#0f0";
 }
 
 function gridMoveTo(x, y, ctx) {
@@ -285,6 +261,11 @@ function gridDrawScreen(screen, ctx) {
 }
 
 function drawRect(rect, ctx) {
+  gridColorDefault(ctx);
+  if (rect.active === true) {
+    gridColorAccent(ctx);
+  }
+
   ctx.beginPath()
   gridMoveTo(...rect.topLeft, ctx)
   gridLineTo(...rect.topRight, ctx)
@@ -340,8 +321,38 @@ function splitScreen(screen, ctx) {
     bottomLeft: bottomCenter,
   }
 
+  if (touch) {
+    quadrant1.active = pointInRect(touch, quadrant1);
+    quadrant2.active = pointInRect(touch, quadrant2);
+    quadrant3.active = pointInRect(touch, quadrant3);
+    quadrant4.active = pointInRect(touch, quadrant4);
+  }
+
   drawRect(quadrant1, ctx)
   drawRect(quadrant2, ctx)
   drawRect(quadrant3, ctx)
   drawRect(quadrant4, ctx)
+}
+
+// adapted from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+function pointInRect(point, rect) {
+  function sign(p1, p2, p3) {
+    return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
+  }
+
+  const left = sign(point, rect.bottomLeft, rect.topLeft);
+  const top = sign(point, rect.topLeft, rect.topRight);
+  const diagonal = sign(point, rect.topRight, rect.bottomLeft);
+  const right = sign(point, rect.topRight, rect.bottomRight);
+  const bottom = sign(point, rect.bottomRight, rect.bottomLeft);
+
+  const tri1HasNegative = (left < 0) || (top < 0) || (diagonal < 0);
+  const tri1HasPositive = (left > 0) || (top > 0) || (diagonal > 0);
+  const pointInTri1 = !(tri1HasNegative && tri1HasPositive)
+
+  const tri2HasNegative = (right < 0) || (bottom < 0) || (diagonal < 0);
+  const tri2HasPositive = (right > 0) || (bottom > 0) || (diagonal > 0);
+  const pointInTri2 = !(tri2HasNegative && tri2HasPositive)
+
+  return pointInTri1
 }
