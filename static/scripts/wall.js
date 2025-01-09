@@ -130,7 +130,7 @@ async function trackActions() {
     notifyOk("click registered")
   }
 
-  if (minDist === 0 || (minDist > releaseDist && lastDist > releaseDist)) {
+  if ((minDist === 0 && lastDist === 0) || (minDist > releaseDist && lastDist > releaseDist)) {
     notifyOk("tracking")
   }
 
@@ -145,7 +145,7 @@ function findMinDist(pointsA, pointsB) {
   function dist(a, b) {
     const dx = a.x - b.x
     const dy = a.y - b.y
-    const dist = Math.sqrt(dx**2 + dy**2)
+    const dist = dx**2 + dy**2 // I know it's not the right function, but I need to amplify the results
 
     if (!minDist || dist < minDist) {
       minDist = dist;
