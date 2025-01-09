@@ -1,8 +1,10 @@
 const previewsSection = document.getElementById("video-container");
 const calibrationButtons = document.getElementById("calibration").elements;
 const statusBadge = document.getElementById("status");
-const gridElement = document.getElementById("grid-canvas");
-const grid = gridElement.getContext("2d");
+const gridAElement = document.getElementById("grid-a");
+const gridA = gridAElement.getContext("2d");
+const gridBElement = document.getElementById("grid-b");
+const gridB = gridBElement.getContext("2d");
 let camA;
 let camB;
 let touchDist = 0;
@@ -82,11 +84,18 @@ async function setupCameras() {
 
   [camA, camB] = cameras;
 
-  gridElement.clientWidth = camA.feed.clientWidth;
-  gridElement.clientHeight = camA.feed.clientHeight;
-  grid.canvas.width = camA.feed.clientWidth;
-  grid.canvas.height = camA.feed.clientHeight;
-  gridClear();
+  resizeGrid(gridAElement, gridA, camA.feed)
+  resizeGrid(gridBElement, gridB, camB.feed)
+
+  function resizeGrid(element, ctx, feed) {
+    element.style.width = "100%";
+    element.style.aspectRatio = `${feed.clientWidth} / ${feed.clientHeight}`;
+    setTimeout(() => {
+      ctx.canvas.width = element.clientWidth;
+      ctx.canvas.height = element.clientHeight;
+      gridClear(ctx);
+    }, 10)
+  }
 }
 
 async function trackWristsInPx(cam) {
@@ -191,7 +200,8 @@ function setupCalibrationButtons() {
     let [[leftB, rightB]] = await trackWristsInPx(camB)
     camA.calibration.topLeft = [leftA.x, leftA.y];
     camB.calibration.topLeft = [leftB.x, leftB.y];
-    gridDrawScreen();
+    gridDrawScreen(camA.calibration, gridA);
+    gridDrawScreen(camB.calibration, gridB);
   });
 
   calibrationButtons.tr.addEventListener("click", async () => {
@@ -199,7 +209,8 @@ function setupCalibrationButtons() {
     let [[leftB, rightB]] = await trackWristsInPx(camB)
     camA.calibration.topRight = [rightA.x, rightA.y];
     camB.calibration.topRight = [rightB.x, rightB.y];
-    gridDrawScreen();
+    gridDrawScreen(camA.calibration, gridA);
+    gridDrawScreen(camB.calibration, gridB);
   });
 
   calibrationButtons.bl.addEventListener("click", async () => {
@@ -207,7 +218,8 @@ function setupCalibrationButtons() {
     let [[leftB, rightB]] = await trackWristsInPx(camB)
     camA.calibration.bottomLeft = [leftA.x, leftA.y];
     camB.calibration.bottomLeft = [leftB.x, leftB.y];
-    gridDrawScreen();
+    gridDrawScreen(camA.calibration, gridA);
+    gridDrawScreen(camB.calibration, gridB);
   });
 
   calibrationButtons.br.addEventListener("click", async () => {
@@ -215,7 +227,8 @@ function setupCalibrationButtons() {
     let [[leftB, rightB]] = await trackWristsInPx(camB)
     camA.calibration.bottomRight = [rightA.x, rightA.y];
     camB.calibration.bottomRight = [rightB.x, rightB.y];
-    gridDrawScreen();
+    gridDrawScreen(camA.calibration, gridA);
+    gridDrawScreen(camB.calibration, gridB);
   });
 
   calibrationButtons.in.addEventListener("click", async () => {
@@ -245,42 +258,44 @@ function notifyErr(message) {
   console.error(message)
 }
 
-function gridClear() {
-  grid.clearRect(0, 0, grid.canvas.width, grid.canvas.height)
+function gridClear(ctx) {
+  ctx.fillStyle = "#eff1f5";
+  ctx.strokeStyle = "transparent";
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  gridColorDefault(ctx);
+}
+function gridColorDefault(ctx) {
+  ctx.strokeStyle = "#4c4f69";
+}
+function gridColorAccent(ctx) {
+  ctx.strokeStyle = "#1e66f5";
 }
 
-function gridPoint(x, y) {
-  grid.fillRect(x*grid.canvs.width-10, y*grid.canvas.height-10, 20, 20);
+function gridMoveTo(x, y, ctx) {
+  ctx.moveTo(x * ctx.canvas.width, y * ctx.canvas.height);
 }
 
-function gridMove(x, y) {
-  grid.moveTo(x * grid.canvas.width, y * grid.canvas.height);
+function gridLineTo(x, y, ctx) {
+  ctx.lineTo(x * ctx.canvas.width, y * ctx.canvas.height);
 }
 
-function gridLine(x, y) {
-  grid.lineTo(x * grid.canvas.width, y * grid.canvas.height);
+function gridDrawScreen(screen, ctx) {
+  gridClear(ctx);
+  drawRect(screen, ctx);
 }
 
-function gridDrawScreen() {
-    gridClear();
-    gridDrawRect(camA.calibration);
-}
-
-function gridDrawRect(rect) {
-  grid.beginPath()
-  gridMove(...rect.topLeft)
-  gridLine(...rect.topRight)
-  gridLine(...rect.bottomRight)
-  gridLine(...rect.bottomLeft)
-  gridLine(...rect.topLeft)
-  grid.stroke()
+function drawRect(rect, ctx) {
+  ctx.beginPath()
+  gridMoveTo(...rect.topLeft, ctx)
+  gridLineTo(...rect.topRight, ctx)
+  gridLineTo(...rect.bottomRight, ctx)
+  gridLineTo(...rect.bottomLeft, ctx)
+  gridLineTo(...rect.topLeft, ctx)
+  ctx.stroke()
 }
 
 // implemented https://stackoverflow.com/questions/530396/how-to-draw-a-perspective-correct-grid-in-2d
-function splitScreen() {
-  const cam = camA;
-  const screen = camA.calibration;
-
+function splitScreen(screen, ctx) {
   const left = [screen.topLeft, screen.bottomLeft]
   const bottom = [screen.bottomLeft, screen.bottomRight]
   const top = [screen.topLeft, screen.topRight]
@@ -325,6 +340,8 @@ function splitScreen() {
     bottomLeft: bottomCenter,
   }
 
-  gridDrawRect(quadrant1)
-  gridDrawRect(quadrant3)
+  drawRect(quadrant1, ctx)
+  drawRect(quadrant2, ctx)
+  drawRect(quadrant3, ctx)
+  drawRect(quadrant4, ctx)
 }

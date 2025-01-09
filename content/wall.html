@@ -36,6 +36,10 @@
     align-items: center;
     gap: 1rem;
   }
+
+  canvas {
+    border-radius: var(--pico-border-radius);
+  }
 </style>
 
 <section>
@@ -74,7 +78,10 @@
 </section>
 <section>
   <h3>Coordinate grid</h3>
-  <canvas id="grid-canvas" />
+  <div class="grid">
+    <canvas id="grid-a"></canvas>
+    <canvas id="grid-b"></canvas>
+  </div>
 </section>
 <section>
   <h3>Camera feeds</h3>
