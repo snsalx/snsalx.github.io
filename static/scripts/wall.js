@@ -146,6 +146,7 @@ async function trackMinDist() {
 
 async function trackActions() {
   const points = await findPoints(camA, gridA);
+  notifyOk(JSON.stringify(points.map(point => ({x: Math.floor(point.x * 100), y: Math.floor(point.y * 100)}))))
 
   return // ---------------------------------------------------------------------- //
 
@@ -279,7 +280,11 @@ async function findPoints(cam, ctx) {
     {x: 1, y: 1},
   ]
 
-  return recurse(cam.calibration, hands.flat(), ctx, 10)
+  const depth = 10;
+  const max = Math.pow(2, depth);
+
+  return recurse(cam.calibration, hands.flat(), ctx, depth - 1)
+    .map(point => ({x: point.x / max, y: point.y / max}))
 
   function recurse(screen, hands, ctx, iterationsLeft) {
     if (iterationsLeft <= 0) {
@@ -299,8 +304,8 @@ async function findPoints(cam, ctx) {
       const outer = quadrantLocation[idx + 1]
 
       return recurse(quad, hands, ctx, iterationsLeft-1).flatMap(inner => ({
-        x: outer.x * iterationsLeft + inner.x,
-        y: outer.y * iterationsLeft + inner.y,
+        x: outer.x * Math.pow(2, iterationsLeft) + inner.x,
+        y: outer.y * Math.pow(2, iterationsLeft) + inner.y,
       }))
     }).flat()
   }
