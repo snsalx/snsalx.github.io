@@ -233,7 +233,7 @@ function gridClear(ctx) {
   gridColorDefault(ctx);
 }
 function gridColorDefault(ctx) {
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle = "#aaa";
 }
 function gridColorAccent(ctx) {
   ctx.strokeStyle = "#0f0";
@@ -268,26 +268,41 @@ function drawRect(rect, ctx) {
 }
 
 async function findPoints(cam, ctx) {
+  gridClear(ctx);
+
   const hands = await trackWrists(cam); // these are grouped by 2 - by people
+  const quadrantLocation = [
+    undefined,
+    {x: 1, y: 0},
+    {x: 0, y: 0},
+    {x: 0, y: 1},
+    {x: 1, y: 1},
+  ]
 
-  return recurse(cam.calibration, hands.flat(), ctx, 0)
+  return recurse(cam.calibration, hands.flat(), ctx, 10)
 
-  function recurse(screen, hands, ctx, depth) {
-    if (depth > 7) {
-      return {x: 0, y: 0}
+  function recurse(screen, hands, ctx, iterationsLeft) {
+    if (iterationsLeft <= 0) {
+      return [quadrantLocation[2]]
     }
 
-    const quadrants = cutIntoQuadrants(screen);
-
-    return quadrants.map(quad => {
+    return cutIntoQuadrants(screen).map((quad, idx) => {
       const point = hands.find(hand => pointInRect([hand.x, hand.y], quad));
 
       quad.active = Boolean(point)
-
       drawRect(quad, ctx);
 
-      return quad.active;
-    })
+      if (!quad.active) {
+        return []
+      }
+
+      const outer = quadrantLocation[idx + 1]
+
+      return recurse(quad, hands, ctx, iterationsLeft-1).flatMap(inner => ({
+        x: outer.x * iterationsLeft + inner.x,
+        y: outer.y * iterationsLeft + inner.y,
+      }))
+    }).flat()
   }
 }
 
