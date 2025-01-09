@@ -145,8 +145,9 @@ async function trackMinDist() {
 }
 
 async function trackActions() {
-  const points = await findPoints(camA, gridA);
-  notifyOk(JSON.stringify(points.map(point => ({x: Math.floor(point.x * 100), y: Math.floor(point.y * 100)}))))
+  const promiseA = findPoints(camA, gridA);
+  const promiseB = findPoints(camB, gridB);
+  const [pointsA, pointsB] = await Promise.all([promiseA, promiseB]);
 
   return // ---------------------------------------------------------------------- //
 
