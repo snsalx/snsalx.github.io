@@ -3,6 +3,9 @@ const calibrationButtons = document.getElementById("calibration").elements;
 const status = document.getElementById("status");
 let camA;
 let camB;
+let touchDist = 0;
+let releaseDist = 0;
+let lastDist = Infinity;
 
 init().catch(notifyErr)
 
@@ -106,7 +109,7 @@ async function trackWrists(cam) {
     .filter((child) => Array.from(child.classList).includes("marker"))
     .forEach((marker) => marker.remove());
 
-  for (const person of people) {
+  people.map(person => {
     const [leftWrist, rightWrist] = person;
 
     const markerL = document.createElement("div");
@@ -120,7 +123,7 @@ async function trackWrists(cam) {
     markerR.style.top = rightWrist.y * 100 + "%";
     cam.preview.appendChild(markerL);
     cam.preview.appendChild(markerR);
-  }
+  })
 
   return people.map(([leftWrist, rightWrist]) => {
     const width = (cam.calibration.bottomRight[0] - cam.calibration.topLeft[0])
@@ -131,13 +134,15 @@ async function trackWrists(cam) {
     const ry = (leftWrist.y - cam.calibration.topLeft[1]) / height;
 
     return { left: {x: lx, y: ly}, right: {x: rx, y: ry}}
-  });
+  }).filter(i => (
+      i.left.x >= 0 &&
+      i.left.y <= 100 &&
+      i.right.x >= 0 &&
+      i.right.y <= 100
+    ));
 }
 
-let lastDistLeftWrist = 0;
-let threshold = 0.04;
-
-async function trackActions() {
+async function trackMinDist() {
   const [camAData, camBData] = await Promise.all([camA, camB].map(trackWrists));
 
   const camAPoints = camAData.flatMap(detectionToArray);
@@ -153,7 +158,21 @@ async function trackActions() {
     return Math.sqrt(dx**2 + dy**2)
   }
 
-  notifyOk(Math.min(...distances));
+  return Math.min(...distances);
+}
+
+async function trackActions() {
+  const minDist = await trackMinDist();
+
+  if (minDist < touchDist && lastDist < touchDist) {
+    notifyOk("click registered")
+  }
+
+  if (minDist > releaseDist && lastDist > releaseDist) {
+    notifyOk("tracking")
+  }
+
+  lastDist = minDist;
 }
 
 function setupCalibrationButtons() {
@@ -184,6 +203,14 @@ function setupCalibrationButtons() {
       cam.preview.appendChild(corner);
     }),
   );
+
+  calibrationButtons.in.addEventListener("click", async () => {
+    touchDist = await trackMinDist();
+  })
+
+  calibrationButtons.out.addEventListener("click", async () => {
+    releaseDist = await trackMinDist();
+  })
 }
 
 function notifyOk(message) {
