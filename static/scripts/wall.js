@@ -111,15 +111,13 @@ async function trackWrists(cam) {
       kp.find((point) => point.name === "left_wrist"),
       kp.find((point) => point.name === "right_wrist"),
     ])
-    .map((inPx) => {
-      const inPercent = inPx.map((point) => ({
+    .map((inPx) => 
+      inPx.map((point) => ({
         ...point,
         x: point.x / width,
         y: point.y / height,
-      }));
-
-      return inPercent;
-    });
+      }))
+    );
 }
 
 async function trackMinDist() {
@@ -147,17 +145,11 @@ async function trackMinDist() {
 }
 
 async function trackActions() {
+  const points = await findPoints(camA, gridA);
+
+  return // ---------------------------------------------------------------------- //
+
   const minDist = await trackMinDist();
-
-  notifyOk(JSON.stringify({touch, minDist}))
-
-  try {
-    splitScreen(camA.calibration, gridA);
-  } catch {
-    console.log('please calibrate')
-    return
-  }
-  return 
 
   if (minDist < touchDist && lastDist < touchDist) {
     notifyOk("click registered")
@@ -275,8 +267,32 @@ function drawRect(rect, ctx) {
   ctx.stroke()
 }
 
+async function findPoints(cam, ctx) {
+  const hands = await trackWrists(cam); // these are grouped by 2 - by people
+
+  return recurse(cam.calibration, hands.flat(), ctx, 0)
+
+  function recurse(screen, hands, ctx, depth) {
+    if (depth > 7) {
+      return {x: 0, y: 0}
+    }
+
+    const quadrants = cutIntoQuadrants(screen);
+
+    return quadrants.map(quad => {
+      const point = hands.find(hand => pointInRect([hand.x, hand.y], quad));
+
+      quad.active = Boolean(point)
+
+      drawRect(quad, ctx);
+
+      return quad.active;
+    })
+  }
+}
+
 // implemented https://stackoverflow.com/questions/530396/how-to-draw-a-perspective-correct-grid-in-2d
-function splitScreen(screen, ctx) {
+function cutIntoQuadrants(screen) {
   const left = [screen.topLeft, screen.bottomLeft]
   const bottom = [screen.bottomLeft, screen.bottomRight]
   const top = [screen.topLeft, screen.topRight]
@@ -284,17 +300,22 @@ function splitScreen(screen, ctx) {
   const diagonal1 = [screen.topLeft, screen.bottomRight]
   const diagonal2 = [screen.topRight, screen.bottomLeft]
 
-  const center = math.intersect(...diagonal1, ...diagonal2)
-  const vanishingPoint1 = math.intersect(...top, ...bottom)
-  const vanishingPoint2 = math.intersect(...left, ...right)
+  const center = intersect(diagonal1, diagonal2)
+  const vanishingPoint1 = intersect(top, bottom)
+  const vanishingPoint2 = intersect(left, right)
+
+  if (vanishingPoint1 === null || vanishingPoint2 === null) {
+    console.debug('vanishing points are at infinity, meaning that either the world is perfect or the system is not calibrated')
+    return []
+  }
 
   const primaryHorizontal = [center, vanishingPoint1]
   const primaryVertical = [center, vanishingPoint2]
 
-  const leftCenter = math.intersect(...left, ...primaryHorizontal)
-  const bottomCenter = math.intersect(...bottom, ...primaryVertical)
-  const topCenter = math.intersect(...top, ...primaryVertical)
-  const rightCenter = math.intersect(...right, ...primaryHorizontal)
+  const leftCenter = intersect(left, primaryHorizontal)
+  const bottomCenter = intersect(bottom, primaryVertical)
+  const topCenter = intersect(top, primaryVertical)
+  const rightCenter = intersect(right, primaryHorizontal)
 
   const quadrant1 = {
     topLeft: topCenter,
@@ -321,17 +342,11 @@ function splitScreen(screen, ctx) {
     bottomLeft: bottomCenter,
   }
 
-  if (touch) {
-    quadrant1.active = pointInRect(touch, quadrant1);
-    quadrant2.active = pointInRect(touch, quadrant2);
-    quadrant3.active = pointInRect(touch, quadrant3);
-    quadrant4.active = pointInRect(touch, quadrant4);
-  }
+  return [quadrant1, quadrant2, quadrant3, quadrant4]
+}
 
-  drawRect(quadrant1, ctx)
-  drawRect(quadrant2, ctx)
-  drawRect(quadrant3, ctx)
-  drawRect(quadrant4, ctx)
+function intersect(line1, line2) {
+  return math.intersect(...line1, ...line2)
 }
 
 // adapted from https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
@@ -350,9 +365,9 @@ function pointInRect(point, rect) {
   const tri1HasPositive = (left > 0) || (top > 0) || (diagonal > 0);
   const pointInTri1 = !(tri1HasNegative && tri1HasPositive)
 
-  const tri2HasNegative = (right < 0) || (bottom < 0) || (diagonal < 0);
-  const tri2HasPositive = (right > 0) || (bottom > 0) || (diagonal > 0);
+  const tri2HasNegative = (right < 0) || (bottom < 0) || (diagonal > 0);
+  const tri2HasPositive = (right > 0) || (bottom > 0) || (diagonal < 0);
   const pointInTri2 = !(tri2HasNegative && tri2HasPositive)
 
-  return pointInTri1
+  return pointInTri1 || pointInTri2
 }
