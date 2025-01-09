@@ -7,7 +7,6 @@ const gridBElement = document.getElementById("grid-b");
 const gridB = gridBElement.getContext("2d");
 let camA;
 let camB;
-let touch = null;
 let touchDist = 0;
 let releaseDist = 0;
 let lastDist = Infinity;
@@ -120,48 +119,41 @@ async function trackWrists(cam) {
     );
 }
 
-async function trackMinDist() {
-  touch = null;
-
-  const [camAData, camBData] = await Promise.all([camA, camB].map(trackWrists));
-  const camAPoints = camAData.flat();
-  const camBPoints = camBData.flat();
-
-  let minDist = 0;
-
-  const distances = camAPoints.forEach(aPoint => (camBPoints.forEach(bPoint => dist(aPoint, bPoint))))
-  function dist(aPoint, bPoint) {
-    const dx = aPoint.x - bPoint.x
-    const dy = aPoint.y - bPoint.y
-    const dist = Math.sqrt(dx**2 + dy**2)
-
-    if (!minDist || dist < minDist) {
-      minDist = dist;
-      touch = [aPoint.x, aPoint.y];
-    }
-  }
-
-  return minDist;
-}
-
 async function trackActions() {
   const promiseA = findPoints(camA, gridA);
   const promiseB = findPoints(camB, gridB);
   const [pointsA, pointsB] = await Promise.all([promiseA, promiseB]);
 
-  return // ---------------------------------------------------------------------- //
+  const minDist = findMinDist(pointsA, pointsB);
 
-  const minDist = await trackMinDist();
-
-  if (minDist < touchDist && lastDist < touchDist) {
+  if (minDist !== 0 && minDist < touchDist && lastDist < touchDist) {
     notifyOk("click registered")
   }
 
-  if (minDist > releaseDist && lastDist > releaseDist) {
+  if (minDist === 0 || (minDist > releaseDist && lastDist > releaseDist)) {
     notifyOk("tracking")
   }
 
   lastDist = minDist;
+}
+
+function findMinDist(pointsA, pointsB) {
+  let minDist = 0;
+
+  const distances = pointsA.forEach(a => (pointsB.forEach(b => dist(a, b))))
+
+  function dist(a, b) {
+    const dx = a.x - b.x
+    const dy = a.y - b.y
+    const dist = Math.sqrt(dx**2 + dy**2)
+
+    if (!minDist || dist < minDist) {
+      minDist = dist;
+      touch = [a.x, a.y];
+    }
+  }
+
+  return minDist;
 }
 
 function setupCalibrationButtons() {
@@ -201,12 +193,12 @@ function setupCalibrationButtons() {
     gridDrawScreen(camB.calibration, gridB);
   });
 
-  calibrationButtons.in.addEventListener("click", async () => {
-    touchDist = await trackMinDist();
+  calibrationButtons.in.addEventListener("click", () => {
+    touchDist = lastDist;
   })
 
-  calibrationButtons.out.addEventListener("click", async () => {
-    releaseDist = await trackMinDist();
+  calibrationButtons.out.addEventListener("click", () => {
+    releaseDist = lastDist;
   })
 }
 
