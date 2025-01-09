@@ -1,6 +1,8 @@
 const previewsSection = document.getElementById("video-container");
 const calibrationButtons = document.getElementById("calibration").elements;
-const status = document.getElementById("status");
+const statusBadge = document.getElementById("status");
+const gridElement = document.getElementById("grid-canvas");
+const grid = gridElement.getContext("2d");
 let camA;
 let camB;
 let touchDist = 0;
@@ -14,7 +16,7 @@ async function init() {
   setupCalibrationButtons();
 
   notify("asking for permissions")
-  await navigator.mediaDevices.getUserMedia({video: true, audio: false})
+  await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
 
   notify("loading camera feeds")
   await setupCameras();
@@ -56,7 +58,9 @@ async function setupCameras() {
 
     const calibration = {
       topLeft: [0, 0],
+      topRight: [1, 0],
       bottomRight: [1, 1],
+      bottomLeft: [0, 1],
     };
 
     previewsSection.appendChild(preview);
@@ -77,6 +81,12 @@ async function setupCameras() {
   }
 
   [camA, camB] = cameras;
+
+  gridElement.clientWidth = camA.feed.clientWidth;
+  gridElement.clientHeight = camA.feed.clientHeight;
+  grid.canvas.width = camA.feed.clientWidth;
+  grid.canvas.height = camA.feed.clientHeight;
+  gridClear();
 }
 
 async function trackWristsInPx(cam) {
@@ -176,33 +186,37 @@ async function trackActions() {
 }
 
 function setupCalibrationButtons() {
-  calibrationButtons.tl.addEventListener("click", async () =>
-    [camA, camB].forEach(async (cam) => {
-      const [[left, _]] = await trackWristsInPx(cam)
-      cam.calibration.topLeft = [left.x, left.y];
+  calibrationButtons.tl.addEventListener("click", async () => {
+    let [[leftA, rightA]] = await trackWristsInPx(camA)
+    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    camA.calibration.topLeft = [leftA.x, leftA.y];
+    camB.calibration.topLeft = [leftB.x, leftB.y];
+    gridDrawScreen();
+  });
 
-      cam.preview.querySelector(".top-left")?.remove();
-      const corner = document.createElement("div");
-      corner.classList = ["corner top-left"];
-      corner.style.left = left.x * 100 + "%";
-      corner.style.top = left.y * 100 + "%";
-      cam.preview.appendChild(corner);
-    }),
-  );
+  calibrationButtons.tr.addEventListener("click", async () => {
+    let [[leftA, rightA]] = await trackWristsInPx(camA)
+    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    camA.calibration.topRight = [rightA.x, rightA.y];
+    camB.calibration.topRight = [rightB.x, rightB.y];
+    gridDrawScreen();
+  });
 
-  calibrationButtons.br.addEventListener("click", async () =>
-    [camA, camB].forEach(async (cam) => {
-      const [[_, right]] = await trackWristsInPx(cam)
-      cam.calibration.bottomRight = [right.x, right.y];
+  calibrationButtons.bl.addEventListener("click", async () => {
+    let [[leftA, rightA]] = await trackWristsInPx(camA)
+    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    camA.calibration.bottomLeft = [leftA.x, leftA.y];
+    camB.calibration.bottomLeft = [leftB.x, leftB.y];
+    gridDrawScreen();
+  });
 
-      cam.preview.querySelector(".bottom-right")?.remove();
-      const corner = document.createElement("div");
-      corner.classList = ["corner bottom-right"];
-      corner.style.left= right.x * 100 + "%";
-      corner.style.top = right.y * 100 + "%";
-      cam.preview.appendChild(corner);
-    }),
-  );
+  calibrationButtons.br.addEventListener("click", async () => {
+    let [[leftA, rightA]] = await trackWristsInPx(camA)
+    let [[leftB, rightB]] = await trackWristsInPx(camB)
+    camA.calibration.bottomRight = [rightA.x, rightA.y];
+    camB.calibration.bottomRight = [rightB.x, rightB.y];
+    gridDrawScreen();
+  });
 
   calibrationButtons.in.addEventListener("click", async () => {
     touchDist = await trackMinDist();
@@ -214,20 +228,47 @@ function setupCalibrationButtons() {
 }
 
 function notifyOk(message) {
-  status.textContent = message
-  status.style.background = "var(--pico-primary)";
+  statusBadge.textContent = message
+  statusBadge.style.background = "var(--pico-primary)";
   console.log(message)
 }
 
 function notify(message) {
-  status.textContent = message
-  status.style.background = null;
+  statusBadge.textContent = message
+  statusBadge.style.background = null;
   console.log(message)
 }
 
 function notifyErr(message) {
-  status.textContent = message
-  status.style.background = "light-dark(#d20f39, #f38ba8)";
+  statusBadge.textContent = message
+  statusBadge.style.background = "light-dark(#d20f39, #f38ba8)";
   console.error(message)
 }
 
+function gridClear() {
+  grid.clearRect(0, 0, grid.canvas.width, grid.canvas.height)
+}
+
+function gridPoint(x, y) {
+  grid.fillRect(x*grid.canvs.width-10, y*grid.canvas.height-10, 20, 20);
+}
+
+function gridMove(x, y) {
+  grid.moveTo(x * grid.canvas.width, y * grid.canvas.height);
+}
+
+function gridLine(x, y) {
+  grid.lineTo(x * grid.canvas.width, y * grid.canvas.height);
+}
+
+function gridDrawScreen() {
+    gridClear();
+
+    grid.beginPath()
+    gridMove(...camA.calibration.topLeft)
+    gridLine(...camA.calibration.topRight)
+    gridLine(...camA.calibration.bottomRight)
+    gridLine(...camA.calibration.bottomLeft)
+    gridLine(...camA.calibration.topLeft)
+    grid.stroke()
+}

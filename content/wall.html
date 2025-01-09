@@ -60,19 +60,25 @@
     </span>
   </p>
   <form id="calibration">
-    <input name="tl" type="button" value="left hand is top left" />
-    <input name="br" type="button" value="right hand is bottom right" />
-    <input name="in" type="button" value="set touch distance" />
-    <input name="out" type="button" value="set release distance" />
+    <div class="grid">
+      <input name="tl" type="button" value="left hand is top left" />
+      <input name="tr" type="button" value="right hand is top right" />
+    </div>
+    <div class="grid">
+      <input name="bl" type="button" value="left hand is bottom left" />
+      <input name="br" type="button" value="right hand is bottom right" />
+    </div>
+    <input name="in" type="button" value="closest hand is touching the wall" />
+    <input name="out" type="button" value="closest hand is not touching the wall" />
   </form>
+</section>
+<section>
+  <h3>Coordinate grid</h3>
+  <canvas id="grid-canvas" />
 </section>
 <section>
   <h3>Camera feeds</h3>
   <div id="video-container"></div>
-</section>
-<section>
-  <h3>Coordinate grid</h3>
-  <p>TODO</p>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
