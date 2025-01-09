@@ -140,8 +140,8 @@ async function trackWrists(cam) {
     const height = (cam.calibration.bottomRight[1] - cam.calibration.topLeft[1])
     const lx = (leftWrist.x - cam.calibration.topLeft[0]) / width;
     const ly = (leftWrist.y - cam.calibration.topLeft[1]) / height;
-    const rx = (leftWrist.x - cam.calibration.topLeft[0]) / width;
-    const ry = (leftWrist.y - cam.calibration.topLeft[1]) / height;
+    const rx = (rightWrist.x - cam.calibration.topLeft[0]) / width;
+    const ry = (rightWrist.y - cam.calibration.topLeft[1]) / height;
 
     return { left: {x: lx, y: ly}, right: {x: rx, y: ry}}
   }).filter(i => (
