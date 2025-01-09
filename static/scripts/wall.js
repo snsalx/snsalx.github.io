@@ -263,12 +263,68 @@ function gridLine(x, y) {
 
 function gridDrawScreen() {
     gridClear();
+    gridDrawRect(camA.calibration);
+}
 
-    grid.beginPath()
-    gridMove(...camA.calibration.topLeft)
-    gridLine(...camA.calibration.topRight)
-    gridLine(...camA.calibration.bottomRight)
-    gridLine(...camA.calibration.bottomLeft)
-    gridLine(...camA.calibration.topLeft)
-    grid.stroke()
+function gridDrawRect(rect) {
+  grid.beginPath()
+  gridMove(...rect.topLeft)
+  gridLine(...rect.topRight)
+  gridLine(...rect.bottomRight)
+  gridLine(...rect.bottomLeft)
+  gridLine(...rect.topLeft)
+  grid.stroke()
+}
+
+// implemented https://stackoverflow.com/questions/530396/how-to-draw-a-perspective-correct-grid-in-2d
+function splitScreen() {
+  const cam = camA;
+  const screen = camA.calibration;
+
+  const left = [screen.topLeft, screen.bottomLeft]
+  const bottom = [screen.bottomLeft, screen.bottomRight]
+  const top = [screen.topLeft, screen.topRight]
+  const right = [screen.topRight, screen.bottomRight]
+  const diagonal1 = [screen.topLeft, screen.bottomRight]
+  const diagonal2 = [screen.topRight, screen.bottomLeft]
+
+  const center = math.intersect(...diagonal1, ...diagonal2)
+  const vanishingPoint1 = math.intersect(...top, ...bottom)
+  const vanishingPoint2 = math.intersect(...left, ...right)
+
+  const primaryHorizontal = [center, vanishingPoint1]
+  const primaryVertical = [center, vanishingPoint2]
+
+  const leftCenter = math.intersect(...left, ...primaryHorizontal)
+  const bottomCenter = math.intersect(...bottom, ...primaryVertical)
+  const topCenter = math.intersect(...top, ...primaryVertical)
+  const rightCenter = math.intersect(...right, ...primaryHorizontal)
+
+  const quadrant1 = {
+    topLeft: topCenter,
+    topRight: screen.topRight,
+    bottomRight: rightCenter,
+    bottomLeft: center,
+  }
+  const quadrant2 = {
+    topLeft: screen.topLeft,
+    topRight: topCenter,
+    bottomRight: center,
+    bottomLeft: leftCenter,
+  }
+  const quadrant3 = {
+    topLeft: leftCenter,
+    topRight: center,
+    bottomRight: bottomCenter,
+    bottomLeft: screen.bottomLeft,
+  }
+  const quadrant4 = {
+    topLeft: center,
+    topRight: rightCenter,
+    bottomRight: screen.bottomRight,
+    bottomLeft: bottomCenter,
+  }
+
+  gridDrawRect(quadrant1)
+  gridDrawRect(quadrant3)
 }
