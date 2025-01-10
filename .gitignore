@@ -3,5 +3,5 @@
 /content/.stfolder
 /content/Excalidraw
 /content/*.svg
-/.direnv/
+.direnv/
 pb_data
