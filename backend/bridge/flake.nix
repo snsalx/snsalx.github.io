@@ -10,6 +10,7 @@
       devShell = pkgs.mkShell {
         buildInputs = with pkgs; [
           go
+          gopls
           xsel
           xclip
           libpng
