@@ -43,6 +43,8 @@ func main() {
 		robotgo.Move(coordinateX, coordinateY)
 		log.Printf("Moving mouse to %dx%d px", coordinateX, coordinateY)
 
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, "OK")
 	})
 
@@ -50,13 +52,14 @@ func main() {
 		robotgo.Click()
 		log.Print("Clicking")
 
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, "OK")
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-
 		io.WriteString(w, help)
 	})
 

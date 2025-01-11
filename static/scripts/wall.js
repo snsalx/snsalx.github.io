@@ -10,6 +10,23 @@ let camB;
 let touchDist = 0;
 let releaseDist = 0;
 let lastDist = Infinity;
+let holding = false;
+let calibrating = true;
+
+const bridge = {
+  async moveTo(x, y, max) {
+    if (calibrating) {
+      return;
+    }
+    await fetch(`http://127.0.0.1:1918/mouse/move?x=${x}&y=${y}&max=${max}`).catch(() => console.warn("bridge is not running"))
+  },
+  async click() {
+    if (calibrating) {
+      return;
+    }
+    await fetch("http://127.0.0.1:1918/mouse/click").catch(() => console.warn("bridge is not running"))
+  }
+}
 
 init().catch(notifyErr)
 
@@ -124,23 +141,35 @@ async function trackActions() {
   const promiseB = findPoints(camB, gridB);
   const [pointsA, pointsB] = await Promise.all([promiseA, promiseB]);
 
-  const minDist = findMinDist(pointsA, pointsB);
+  const {coordinates, minDist} = findMinDist(pointsA, pointsB);
+
+  if (coordinates) {
+    await bridge.moveTo(coordinates.x, coordinates.y, coordinates.max)
+  }
 
   if (minDist !== 0 && minDist < touchDist && lastDist < touchDist) {
     notifyOk("click registered")
+
+    await bridge.click()
+
+    if (!holding) {
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
   }
 
   if ((minDist === 0 && lastDist === 0) || (minDist > releaseDist && lastDist > releaseDist)) {
     notifyOk("tracking")
+    holding = false;
   }
 
   lastDist = minDist;
 }
 
 function findMinDist(pointsA, pointsB) {
+  let coordinates = null;
   let minDist = 0;
 
-  const distances = pointsA.forEach(a => (pointsB.forEach(b => dist(a, b))))
+  pointsA.forEach(a => (pointsB.forEach(b => dist(a, b))))
 
   function dist(a, b) {
     const dx = a.x - b.x
@@ -149,14 +178,19 @@ function findMinDist(pointsA, pointsB) {
 
     if (!minDist || dist < minDist) {
       minDist = dist;
-      touch = [a.x, a.y];
+      coordinates = a;
     }
   }
 
-  return minDist;
+  return {coordinates, minDist};
 }
 
 function setupCalibrationButtons() {
+  calibrationButtons.toggle.addEventListener("click", async () => {
+    calibrating = !calibrating
+    Array.from(document.querySelectorAll(".for-calibration")).map(el => el.style.display = calibrating ? 'block' : 'none')
+  });
+
   calibrationButtons.tl.addEventListener("click", async () => {
     let [[leftA, rightA]] = await trackWrists(camA)
     let [[leftB, rightB]] = await trackWrists(camB)
@@ -277,7 +311,7 @@ async function findPoints(cam, ctx) {
   const max = Math.pow(2, depth);
 
   return recurse(cam.calibration, hands.flat(), ctx, depth - 1)
-    .map(point => ({x: point.x / max, y: point.y / max}))
+    .map(point => ({x: point.x, y: point.y, max}))
 
   function recurse(screen, hands, ctx, iterationsLeft) {
     if (iterationsLeft <= 0) {
