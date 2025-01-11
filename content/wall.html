@@ -64,16 +64,19 @@
     </span>
   </p>
   <form id="calibration">
-    <div class="grid">
-      <input name="tl" type="button" value="left hand is top left" />
-      <input name="tr" type="button" value="right hand is top right" />
+    <input name="toggle" type="button" value="toggle calibration mode" />
+    <div class="for-calibration">
+      <div class="grid">
+        <input name="tl" type="button" value="left hand is top left" />
+        <input name="tr" type="button" value="right hand is top right" />
+      </div>
+      <div class="grid">
+        <input name="bl" type="button" value="left hand is bottom left" />
+        <input name="br" type="button" value="right hand is bottom right" />
+      </div>
+      <input name="in" type="button" value="closest hand is touching the wall" />
+      <input name="out" type="button" value="closest hand is not touching the wall" />
     </div>
-    <div class="grid">
-      <input name="bl" type="button" value="left hand is bottom left" />
-      <input name="br" type="button" value="right hand is bottom right" />
-    </div>
-    <input name="in" type="button" value="closest hand is touching the wall" />
-    <input name="out" type="button" value="closest hand is not touching the wall" />
   </form>
 </section>
 <section>
@@ -83,7 +86,7 @@
     <canvas id="grid-b"></canvas>
   </div>
 </section>
-<section>
+<section class="for-calibration">
   <h3>Camera feeds</h3>
   <div id="video-container"></div>
 </section>
