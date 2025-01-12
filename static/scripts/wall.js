@@ -52,17 +52,10 @@ async function setupCameras() {
   const cam1 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
   const cam2 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
 
-  const dbg = document.getElementById("debug")
-  dbg.appendChild(document.createTextNode(JSON.stringify([cam1, cam2], null, 4)));
-  dbg.appendChild(document.createTextNode('\n\n------\n\n'))
-
   const devices = await navigator.mediaDevices.enumerateDevices();
   const videoInputs = devices.filter((device) => device.kind === "videoinput");
 
   const promises = await Promise.allSettled(videoInputs.map(async cam => {
-    dbg.appendChild(document.createTextNode(cam.deviceId));
-    dbg.appendChild(document.createTextNode('\n'))
-
     const preview = document.createElement("figure");
     preview.style.position = "relative";
 
@@ -96,9 +89,6 @@ async function setupCameras() {
 
     return { id: cam.deviceId, detector, feed, preview, calibration };
   }))
-
-  dbg.appendChild(document.createTextNode(promises.filter(p => p.status === "rejected").map(p => p.reason)));
-  dbg.appendChild(document.createTextNode('\n\n------\n\n'))
 
   const cameras = promises.filter(promise => promise.status === "fulfilled").map(promise => promise.value)
 
