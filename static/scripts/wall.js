@@ -34,9 +34,6 @@ async function init() {
   notify("initializing the UI")
   setupCalibrationButtons();
 
-  notify("asking for permissions")
-  await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
-
   notify("loading camera feeds")
   await setupCameras();
 
@@ -52,6 +49,9 @@ async function init() {
 }
 
 async function setupCameras() {
+  const cam1 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
+  const cam2 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
+
   const devices = await navigator.mediaDevices.enumerateDevices();
   const videoInputs = devices.filter((device) => device.kind === "videoinput");
 
