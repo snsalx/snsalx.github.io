@@ -40,6 +40,9 @@ async function init() {
   notify("loading camera feeds")
   await setupCameras();
 
+  notify("restoring calibration")
+  restoreCalibration();
+
   notifyOk("tracking")
 
   while (true) {
@@ -199,6 +202,11 @@ function setupCalibrationButtons() {
   calibrationButtons.toggle.addEventListener("click", async () => {
     calibrating = !calibrating
     Array.from(document.querySelectorAll(".for-calibration")).map(el => el.style.display = calibrating ? 'block' : 'none')
+
+    notifyOk('saving calibration')
+    localStorage.setItem('camACalibration', JSON.stringify(camA.calibration))
+    localStorage.setItem('camBCalibration', JSON.stringify(camB.calibration))
+    localStorage.setItem('touchDistCalibration', JSON.stringify({touchDist, releaseDist, armLength: +calibrationButtons.multiplier.value}))
   });
 
   calibrationButtons.tl.addEventListener("click", async () => {
@@ -244,6 +252,26 @@ function setupCalibrationButtons() {
   calibrationButtons.out.addEventListener("click", () => {
     releaseDist = lastDist;
   })
+}
+
+function restoreCalibration() {
+  const camACalibrtion = localStorage.getItem('camACalibration')
+  const camBCalibrtion = localStorage.getItem('camBCalibration')
+  const touchDistCalibration = localStorage.getItem('touchDistCalibration')
+
+  if (!camACalibrtion || !camBCalibrtion || !touchDistCalibration) {
+    return
+  }
+
+  camA.calibration = JSON.parse(camACalibrtion)
+  camB.calibration = JSON.parse(camBCalibrtion)
+  const dst = JSON.parse(touchDistCalibration)
+  touchDist = dst.touchDist
+  releaseDist = dst.releaseDist
+  calibrationButtons.multiplier.value = dst.armLength
+
+  calibrating = false;
+  Array.from(document.querySelectorAll(".for-calibration")).map(el => el.style.display = 'none')
 }
 
 let lastNotification = "";
