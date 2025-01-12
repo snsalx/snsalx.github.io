@@ -40,6 +40,9 @@ async function init() {
   notify("loading camera feeds")
   await setupCameras();
 
+  notify("restoring calibration")
+  restoreCalibration();
+
   notifyOk("tracking")
 
   while (true) {
@@ -84,7 +87,7 @@ async function setupCameras() {
 
     previewsSection.appendChild(preview);
 
-    return { detector, feed, preview, calibration };
+    return { id: cam.deviceId, detector, feed, preview, calibration };
   }))
 
   if (cameras.length === 0) {
@@ -99,7 +102,7 @@ async function setupCameras() {
     throw new Error("too many cameras")
   }
 
-  [camA, camB] = cameras;
+  [camA, camB] = cameras.toSorted((a, b) => a.id > b.id ? 1 : -1);
 
   resizeGrid(gridAElement, gridA, camA.feed)
   resizeGrid(gridBElement, gridB, camB.feed)
@@ -120,20 +123,30 @@ async function trackWrists(cam) {
   const poses = await cam.detector.estimatePoses(cam.feed);
   const width = cam.feed.videoWidth;
   const height = cam.feed.videoHeight;
+  const k = +calibrationButtons.multiplier.value;
 
   return poses
     .map((person) => person.keypoints)
-    .map((kp) => [
-      kp.find((point) => point.name === "left_wrist"),
-      kp.find((point) => point.name === "right_wrist"),
-    ])
-    .map((inPx) => 
-      inPx.map((point) => ({
-        ...point,
+    .map((kp) => {
+      const leftWrist = kp.find(point => point.name === "left_wrist");
+      const leftElbow = kp.find(point => point.name === "left_elbow");
+      const leftHand = {
+        x: k * (leftWrist.x - leftElbow.x) + leftElbow.x,
+        y: k * (leftWrist.y - leftElbow.y) + leftElbow.y,
+      }
+
+      const rightWrist = kp.find(point => point.name === "right_wrist");
+      const rightElbow = kp.find(point => point.name === "right_elbow");
+      const rightHand = {
+        x: k * (rightWrist.x - rightElbow.x) + rightElbow.x,
+        y: k * (rightWrist.y - rightElbow.y) + rightElbow.y,
+      }
+
+      return [leftHand, rightHand].map((point) => ({
         x: point.x / width,
         y: point.y / height,
       }))
-    );
+    })
 }
 
 async function trackActions() {
@@ -189,6 +202,11 @@ function setupCalibrationButtons() {
   calibrationButtons.toggle.addEventListener("click", async () => {
     calibrating = !calibrating
     Array.from(document.querySelectorAll(".for-calibration")).map(el => el.style.display = calibrating ? 'block' : 'none')
+
+    notifyOk('saving calibration')
+    localStorage.setItem('camACalibration', JSON.stringify(camA.calibration))
+    localStorage.setItem('camBCalibration', JSON.stringify(camB.calibration))
+    localStorage.setItem('touchDistCalibration', JSON.stringify({touchDist, releaseDist, armLength: +calibrationButtons.multiplier.value}))
   });
 
   calibrationButtons.tl.addEventListener("click", async () => {
@@ -236,7 +254,34 @@ function setupCalibrationButtons() {
   })
 }
 
+function restoreCalibration() {
+  const camACalibrtion = localStorage.getItem('camACalibration')
+  const camBCalibrtion = localStorage.getItem('camBCalibration')
+  const touchDistCalibration = localStorage.getItem('touchDistCalibration')
+
+  if (!camACalibrtion || !camBCalibrtion || !touchDistCalibration) {
+    return
+  }
+
+  camA.calibration = JSON.parse(camACalibrtion)
+  camB.calibration = JSON.parse(camBCalibrtion)
+  const dst = JSON.parse(touchDistCalibration)
+  touchDist = dst.touchDist
+  releaseDist = dst.releaseDist
+  calibrationButtons.multiplier.value = dst.armLength
+
+  calibrating = false;
+  Array.from(document.querySelectorAll(".for-calibration")).map(el => el.style.display = 'none')
+}
+
+let lastNotification = "";
+
 function notifyOk(message) {
+  if (message === lastNotification) {
+    return
+  }
+  lastNotification = message
+
   statusBadge.textContent = message
   statusBadge.style.background = "var(--pico-primary)";
   console.log(message)
