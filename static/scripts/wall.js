@@ -55,13 +55,13 @@ async function setupCameras() {
   const devices = await navigator.mediaDevices.enumerateDevices();
   const videoInputs = devices.filter((device) => device.kind === "videoinput");
 
-  const promises = await Promise.allSettled(videoInputs.map(async cam => {
+  const cameras = await Promise.all(videoInputs.map(async cam => {
     const preview = document.createElement("figure");
     preview.style.position = "relative";
 
     const feed = document.createElement("video");
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: cam.deviceId }, facingMode: {ideal: 'environment'} },
+      video: { deviceId: { exact: cam.deviceId } },
       audio: false,
     });
     feed.srcObject = stream;
@@ -89,8 +89,6 @@ async function setupCameras() {
 
     return { id: cam.deviceId, detector, feed, preview, calibration };
   }))
-
-  const cameras = promises.filter(promise => promise.status === "fulfilled").map(promise => promise.value)
 
   if (cameras.length === 0) {
     throw new Error("both cameras missing")
