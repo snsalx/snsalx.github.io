@@ -120,20 +120,30 @@ async function trackWrists(cam) {
   const poses = await cam.detector.estimatePoses(cam.feed);
   const width = cam.feed.videoWidth;
   const height = cam.feed.videoHeight;
+  const k = +calibrationButtons.multiplier.value;
 
   return poses
     .map((person) => person.keypoints)
-    .map((kp) => [
-      kp.find((point) => point.name === "left_wrist"),
-      kp.find((point) => point.name === "right_wrist"),
-    ])
-    .map((inPx) => 
-      inPx.map((point) => ({
-        ...point,
+    .map((kp) => {
+      const leftWrist = kp.find(point => point.name === "left_wrist");
+      const leftElbow = kp.find(point => point.name === "left_elbow");
+      const leftHand = {
+        x: k * (leftWrist.x - leftElbow.x) + leftElbow.x,
+        y: k * (leftWrist.y - leftElbow.y) + leftElbow.y,
+      }
+
+      const rightWrist = kp.find(point => point.name === "right_wrist");
+      const rightElbow = kp.find(point => point.name === "right_elbow");
+      const rightHand = {
+        x: k * (rightWrist.x - rightElbow.x) + rightElbow.x,
+        y: k * (rightWrist.y - rightElbow.y) + rightElbow.y,
+      }
+
+      return [leftHand, rightHand].map((point) => ({
         x: point.x / width,
         y: point.y / height,
       }))
-    );
+    })
 }
 
 async function trackActions() {
