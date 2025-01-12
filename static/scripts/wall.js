@@ -84,7 +84,7 @@ async function setupCameras() {
 
     previewsSection.appendChild(preview);
 
-    return { detector, feed, preview, calibration };
+    return { id: cam.deviceId, detector, feed, preview, calibration };
   }))
 
   if (cameras.length === 0) {
@@ -99,7 +99,7 @@ async function setupCameras() {
     throw new Error("too many cameras")
   }
 
-  [camA, camB] = cameras;
+  [camA, camB] = cameras.toSorted((a, b) => a.id > b.id ? 1 : -1);
 
   resizeGrid(gridAElement, gridA, camA.feed)
   resizeGrid(gridBElement, gridB, camB.feed)
@@ -236,7 +236,14 @@ function setupCalibrationButtons() {
   })
 }
 
+let lastNotification = "";
+
 function notifyOk(message) {
+  if (message === lastNotification) {
+    return
+  }
+  lastNotification = message
+
   statusBadge.textContent = message
   statusBadge.style.background = "var(--pico-primary)";
   console.log(message)
