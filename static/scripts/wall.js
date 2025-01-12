@@ -49,10 +49,10 @@ async function init() {
 }
 
 async function setupCameras() {
-  const dbg = document.getElementById("debug")
+  const cam1 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
+  const cam2 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("cameras missing")})
 
-  const cam1 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("access to cam denied")})
-  const cam2 = await navigator.mediaDevices.getUserMedia({video: true, audio: false}).catch(() => {throw new Error("access to cam2 denied")})
+  const dbg = document.getElementById("debug")
   dbg.appendChild(document.createTextNode(JSON.stringify([cam1, cam2], null, 4)));
   dbg.appendChild(document.createTextNode('\n\n------\n\n'))
 
