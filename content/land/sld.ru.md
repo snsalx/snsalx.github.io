@@ -2,6 +2,7 @@
 title: 'SLD'
 date: 2025-02-27T08:14:42+03:00
 draft: false
+redirect_url: https://sld.snlx.net/about
 ---
 
 [sld.snlx.net](https://sld.snlx.net) (слайд -> slide -> sld) - это замена карты [snsalx/map](/map), которая делает компоновку гораздо более гибкой и добавляет базу данных.
