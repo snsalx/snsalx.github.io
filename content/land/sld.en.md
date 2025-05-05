@@ -2,8 +2,11 @@
 title: 'SLD'
 date: 2025-02-27T08:14:42+03:00
 draft: false
-redirect_url: https://sld.snlx.net/about
 ---
+
+<script>
+window.location.href = "https://sld.snlx.net/about"
+</script>
 
 [sld.snlx.net](https://sld.snlx.net) (pronounced "slide") is a [snsalx/map](/map) replacement that makes layouts way more flexible and adds a database.
 
